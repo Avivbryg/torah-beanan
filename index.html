@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>תורה שבענן</title>
+<meta name="description" content="עלון ״פרשת השבוע למהנדסים״ כדף גמרא דיגיטלי: העלון במרכז, וסביבו באר הפוטנציאל, המקורות ומפרשי הקהילה.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;800&family=IBM+Plex+Sans+Hebrew:wght@400;500;600&display=swap">
+<link rel="stylesheet" href="/src/styles.css">
+</head>
+<body>
+<div class="wrap" dir="rtl" lang="he">
+  <header>
+    <div>
+      <div class="eyebrow">תורה שבענן · פרשת השבוע למהנדסים</div>
+      <h1 id="ititle"></h1>
+      <div class="ref" id="iref"></div>
+    </div>
+    <div class="hctl"><button class="theme" id="a11y-btn" aria-label="נגישות" aria-haspopup="dialog" aria-expanded="false" aria-controls="a11y" title="נגישות"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="4.2" r="2" fill="currentColor"/><path d="M5 8.5c2.3.7 4.6 1 7 1s4.7-.3 7-1M12 9.5v5m0 0-3 6m3-6 3 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="theme" id="tour-btn" aria-label="מדריך: איך משתמשים בדף" title="מדריך">?</button><button class="theme" id="theme-btn" aria-label="מעבר בין מצב יום ולילה" title="מצב יום / לילה"></button><div class="modes" role="group" aria-label="תצוגה">
+      <button id="m-seg" aria-pressed="true">לפי פסקה</button>
+      <button id="m-person" aria-pressed="false">לפי מפרש</button>
+    </div></div>
+  </header>
+  <nav class="issues" id="issues" aria-label="בחירת עלון"></nav>
+  <p class="status" id="status" hidden></p>
+  <p class="note" id="hint"></p>
+  <div class="chips" id="chips" hidden></div>
+  <div class="daf">
+    <div class="essay" id="essay"></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+  <footer>
+    <span>הטקסט, המקורות ועמודת באר הפוטנציאל לקוחים מהעלון. המקורות המלאים מספריא. <span id="ifoot"></span></span>
+    <span>פירושי הקהילה וה-👍 יחזרו בקרוב, עם כניסה דרך גוגל.</span>
+    <span>אביב בריגר · aviv.bry@gmail.com</span>
+  </footer>
+</div>
+<div class="a11y" id="a11y" dir="rtl" lang="he" role="dialog" aria-label="הגדרות נגישות" hidden>
+    <div class="a11y-h"><b>נגישות</b><button class="lnk" id="a11y-close">סגירה</button></div>
+    <div class="a11y-row"><span>גודל טקסט</span><div class="a11y-fs"><button id="fs-dn" aria-label="הקטנת טקסט">א−</button><output id="fs-val" aria-live="polite">100%</output><button id="fs-up" aria-label="הגדלת טקסט">א+</button></div></div>
+    <label class="a11y-row"><span>ריווח שורות מוגדל</span><input type="checkbox" id="a-spacing"></label>
+    <label class="a11y-row"><span>ניגודיות גבוהה</span><input type="checkbox" id="a-contrast"></label>
+    <label class="a11y-row"><span>גופן פשוט לקריאה</span><input type="checkbox" id="a-font"></label>
+    <label class="a11y-row"><span>הדגשת קישורים וכפתורים</span><input type="checkbox" id="a-links"></label>
+    <label class="a11y-row"><span>ללא אנימציות</span><input type="checkbox" id="a-motion"></label>
+    <button class="lnk a11y-reset" id="a11y-reset">איפוס הגדרות</button>
+  </div>
+<div id="tour" class="tour" dir="rtl" lang="he" hidden role="dialog" aria-modal="true" aria-labelledby="tour-t">
+  <div class="tour-spot" id="tour-spot"></div>
+  <div class="tour-card" id="tour-card">
+    <div class="tour-step mini" id="tour-n"></div>
+    <h3 id="tour-t"></h3>
+    <p id="tour-b"></p>
+    <div class="tour-nav"><button class="lnk" id="tour-skip">דילוג</button><span class="tour-sp"></span><button class="tour-prev" id="tour-prev">הקודם</button><button class="pub sm" id="tour-next">הבא</button></div>
+  </div>
+</div>
+
+<script type="module" src="/src/app.js"></script>
+</body>
+</html>

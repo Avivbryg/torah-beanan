@@ -1,0 +1,662 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#fff;color:#000}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>תורה שבענן</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Frank+Ruhl+Libre:wght@500;700;800&family=IBM+Plex+Sans+Hebrew:wght@400;500;600&display=swap">
+<style>
+/* Layout: a daf. The newsletter in the main column, sentence by sentence; the commentary panel beside it (below the tapped paragraph on phones) */
+:root{
+  --paper:#f6f8fa; --surface:#ffffff; --ink:#18212b; --muted:#5b6876; --rule:#d8dee5;
+  --blue:#1f4f86; --blue-soft:#e3ecf6; --trad:#6a4a2a; --trad-soft:#f1ebe3; --comm:#2f7a4c; --comm-soft:#e3f1e7; --beer-tint:#eef3fa; --trad-tint:#f8f3ec; --comm-tint:#eff7f1; --like:#b5402f; --hl:#fdf1c7;
+  --f-torah:"Frank Ruhl Libre","David Libre","Times New Roman",serif;
+  --f-ui:"IBM Plex Sans Hebrew","Arial Hebrew",Arial,sans-serif;
+}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+  --paper:#11161c; --surface:#18202a; --ink:#e6ebf0; --muted:#9aa7b4; --rule:#2b3642;
+  --blue:#8db8e8; --blue-soft:#1d2d40; --trad:#d8b58f; --trad-soft:#2a241d; --comm:#86d0a2; --comm-soft:#1b3024; --beer-tint:#162231; --trad-tint:#221d17; --comm-tint:#16241b; --like:#f08a78; --hl:#3a3320; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#11161c; --surface:#18202a; --ink:#e6ebf0; --muted:#9aa7b4; --rule:#2b3642;
+  --blue:#8db8e8; --blue-soft:#1d2d40; --trad:#d8b58f; --trad-soft:#2a241d; --comm:#86d0a2; --comm-soft:#1b3024; --beer-tint:#162231; --trad-tint:#221d17; --comm-tint:#16241b; --like:#f08a78; --hl:#3a3320; color-scheme:dark}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-ui);font-size:15px;line-height:1.6}
+.wrap{max-width:1120px;margin:0 auto;padding-block:28px 48px;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+header{display:flex;flex-wrap:wrap;align-items:flex-end;justify-content:space-between;gap:12px;border-bottom:2px solid var(--ink);padding-bottom:12px;margin-bottom:20px}
+.eyebrow{font-size:12px;letter-spacing:.08em;color:var(--blue);font-weight:600}
+h1{font-family:var(--f-torah);font-size:clamp(30px,7vw,44px);font-weight:800;margin:0;line-height:1.1;text-wrap:balance}
+.ref{color:var(--muted);font-size:13px}
+.modes{display:flex;gap:4px;background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:3px}
+.modes button{font:inherit;font-size:13px;border:0;background:none;color:var(--muted);padding:6px 12px;border-radius:4px;cursor:pointer}
+.modes button[aria-pressed="true"]{background:var(--ink);color:var(--paper)}
+.note{font-size:13px;color:var(--muted);margin:0 0 18px;max-width:65ch}
+.daf{display:grid;grid-template-columns:minmax(0,1fr);gap:28px;max-width:760px}
+@media (max-width:760px){.daf{grid-template-columns:minmax(0,1fr)}}
+.essay{display:flex;flex-direction:column;gap:14px;min-width:0}
+.para{font-family:var(--f-torah);font-size:19px;line-height:1.85;font-weight:500;margin:0;text-align:justify}
+.seg{font:inherit;color:inherit;background:none;border:0;padding:1px 2px;margin:0;cursor:pointer;border-radius:3px;text-align:inherit;display:inline}
+.seg:hover{background:var(--surface);box-shadow:inset 0 -1px 0 var(--rule)}
+.seg[aria-current="true"]{background:var(--hl)}
+.seg strong{font-weight:800}
+.seg sup{font-family:var(--f-ui);font-size:10px;color:var(--blue);font-weight:600;margin-inline-start:2px}
+.seg:focus-visible,.modes button:focus-visible,.like:focus-visible,.chip:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.panel{background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:16px;position:sticky;top:calc(env(safe-area-inset-top,0px) + 12px);max-height:calc(100vh - 40px);overflow:auto;min-width:0}
+@media (max-width:760px){.panel{position:static;max-height:none;margin:4px 0 6px}}
+.panel h2{font-family:var(--f-torah);font-size:18px;margin:0 0 4px}
+.panel .quote{font-family:var(--f-torah);color:var(--muted);font-size:15px;margin:0 0 6px}
+.group{font-size:11px;letter-spacing:.06em;font-weight:600;color:var(--muted);margin:16px 0 6px;border-bottom:1px solid var(--rule);padding-bottom:4px}
+.c{display:flex;flex-direction:column;gap:6px;padding:10px 0;border-bottom:1px dashed var(--rule)}
+.c:last-child{border-bottom:0}
+.who{display:flex;align-items:center;gap:8px;font-size:13px;font-weight:600;flex-wrap:wrap}
+.tag{font-size:11px;font-weight:500;padding:1px 7px;border-radius:999px;background:var(--paper);color:var(--muted);border:1px solid var(--rule)}
+.mark{font-family:var(--f-torah);font-weight:700;min-width:1.4em;display:inline-block}
+.beer .mark,.beer .ttl{color:var(--blue)}
+.beer .body p{margin:0 0 6px}
+.beer .intext{background:var(--blue-soft);border-radius:4px;padding:6px 10px;font-size:14px}
+.beer .intext b{color:var(--blue)}
+.trad{flex-direction:row;gap:8px;align-items:baseline;padding:6px 0}
+.trad .mark{color:var(--trad)}
+
+.body{font-size:14.5px}
+.dh{font-weight:700}
+.foot{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.like{font:inherit;font-size:13px;border:1px solid var(--rule);background:none;color:var(--muted);border-radius:999px;padding:2px 10px;cursor:pointer;font-variant-numeric:tabular-nums}
+.like[aria-pressed="true"]{color:var(--like);border-color:var(--like)}
+.mini{font-size:11px;color:var(--muted)}
+.chips{display:flex;flex-wrap:wrap;gap:6px;margin-bottom:12px}
+.chip{font:inherit;font-size:13px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:999px;padding:4px 12px;cursor:pointer}
+.chip[aria-pressed="true"]{background:var(--ink);color:var(--paper);border-color:var(--ink)}
+.daf.solo{grid-template-columns:minmax(0,1fr)}
+.daf.solo .panel{position:static;max-height:none;max-width:760px}
+.ctx{font:inherit;text-align:start;background:var(--paper);border:0;border-inline-start:3px solid var(--rule);border-radius:0 4px 4px 0;padding:6px 10px;color:var(--muted);font-family:var(--f-torah);font-size:15px;line-height:1.6;cursor:pointer;width:100%}
+.ctx:hover{border-inline-start-color:var(--blue)}
+.ctx .mini{font-family:var(--f-ui);margin-inline-end:4px}
+.trad.stack{flex-direction:column;align-items:stretch}
+.tr{display:flex;gap:8px;align-items:baseline}
+.panel.inline{display:block;font-family:var(--f-ui);font-size:15px;font-weight:400;line-height:1.6;text-align:start;margin:10px 0 12px;border-color:var(--blue);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.panel.inline .quote{display:none}
+.src summary{display:flex;gap:8px;align-items:baseline;cursor:pointer;list-style:none}
+.src summary::-webkit-details-marker{display:none}
+.src summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.trad .ref{font-size:14px;flex:1;min-width:0}
+.open{font-size:12px;color:var(--trad);border:1px solid var(--trad);border-radius:999px;padding:0 8px;white-space:nowrap}
+.src[open] .open{background:var(--trad);color:var(--surface)}
+.src[open] .open::after{content:" ▴"}
+.ft{margin:8px 0 4px;padding-inline-start:10px;border-inline-start:2px solid var(--trad-soft)}
+.fr{display:block;font-size:12px;font-weight:600;color:var(--trad);margin-bottom:2px;text-decoration:none}
+.fr .ext{font-weight:400;text-decoration:underline;text-underline-offset:2px}
+.fx{display:block;font-family:var(--f-torah);font-size:16px;line-height:1.8;color:var(--ink);text-decoration:underline;text-decoration-color:var(--trad-soft);text-decoration-thickness:1px;text-underline-offset:4px}
+.fx:hover{text-decoration-color:var(--trad)}
+.fx:focus-visible,.fr:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.para{cursor:pointer;border-radius:4px;padding:6px 8px;margin:0 -8px;transition:background .15s}
+.para:hover{background:var(--surface)}
+.para[aria-current="true"]{background:var(--hl)}
+.para:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.para strong{font-weight:800}
+.para sup.m{font-family:var(--f-torah);font-size:12px;color:var(--blue);font-weight:700;margin-inline-start:2px}
+.pcount{display:block;font-family:var(--f-ui);font-size:12px;color:var(--blue);margin-top:2px}
+.phead{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.close{font:inherit;border:1px solid var(--rule);background:none;color:var(--muted);border-radius:999px;width:30px;height:30px;cursor:pointer;flex:none}
+.hintline{margin:2px 0 4px}
+.gc{font-weight:500;color:var(--muted);margin-inline-start:4px}
+.it{border-bottom:1px solid var(--rule)}
+.it:last-child{border-bottom:0}
+.it summary{display:flex;gap:8px;align-items:baseline;cursor:pointer;list-style:none;padding:9px 0}
+.it summary::-webkit-details-marker{display:none}
+.it summary:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.it .mark{font-family:var(--f-torah);font-weight:700;min-width:1.4em;flex:none}
+.it.beer .mark,.it.beer .ttl{color:var(--blue)}
+.it.trad .mark{color:var(--trad)}
+.it .ttl{font-weight:600;font-size:14px}
+.it .ref{font-size:14px;flex:1;min-width:0}
+.it .dhs{font-size:13px;color:var(--muted);flex:1;min-width:0}
+.it.beer .ttl{flex:1}
+.chev{margin-inline-start:auto;flex:none;width:8px;height:8px;border-inline-end:2px solid var(--muted);border-bottom:2px solid var(--muted);transform:rotate(45deg);position:relative;top:-2px;transition:transform .15s}
+.it[open] .chev{transform:rotate(225deg);top:2px}
+.it .in{display:flex;flex-direction:column;gap:8px;padding:0 0 12px}
+.it .body p{margin:0 0 6px}
+.intext{background:var(--blue-soft);border-radius:4px;padding:6px 10px;font-size:14px}
+.intext b{color:var(--blue)}
+.ft{padding-inline-start:10px;border-inline-start:2px solid var(--trad-soft)}
+.fr{display:block;font-size:12px;font-weight:600;color:var(--trad);margin-bottom:2px;text-decoration:none}
+.fr .ext{font-weight:400;text-decoration:underline;text-underline-offset:2px}
+.fx{display:block;font-family:var(--f-torah);font-size:16px;line-height:1.8;color:var(--ink);text-decoration:underline;text-decoration-color:var(--trad-soft);text-decoration-thickness:1px;text-underline-offset:4px}
+.fx:hover{text-decoration-color:var(--trad)}
+.fx:focus-visible,.fr:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.panel.inline{margin:8px 0 14px;border-color:var(--blue);box-shadow:0 2px 10px rgba(0,0,0,.08)}
+.status{font-size:13px;border-radius:6px;padding:8px 12px;margin:0 0 12px;max-width:760px}
+.status.ok{background:var(--blue-soft);color:var(--blue)}
+.status.ro{background:var(--trad-soft);color:var(--trad)}
+.it .lc{font-size:12px;color:var(--muted);flex:none;font-variant-numeric:tabular-nums}
+.it.comm .ttl{color:var(--ink)}
+.dh{font-weight:700;font-size:14.5px}
+.ctext{white-space:pre-wrap}
+.del{font:inherit;font-size:11px;background:none;border:0;color:var(--like);cursor:pointer;padding:0;text-decoration:underline}
+.like[disabled]{cursor:default;opacity:.75}
+.add{display:flex;flex-direction:column;gap:6px;margin-top:6px}
+.add.ro{padding-top:8px;border-top:1px solid var(--rule)}
+.fl{font-size:12px;color:var(--muted);font-weight:600}
+.add select,.add input,.add textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--paper);border:1px solid var(--rule);border-radius:6px;padding:8px 10px;width:100%;box-sizing:border-box}
+.add textarea{font-family:var(--f-torah);font-size:16px;line-height:1.6;resize:vertical}
+.add select:focus-visible,.add input:focus-visible,.add textarea:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.addrow{display:flex;justify-content:space-between;align-items:center;gap:8px}
+.pub{font:inherit;font-size:14px;font-weight:600;background:var(--blue);color:var(--surface);border:0;border-radius:6px;padding:8px 18px;cursor:pointer}
+.pub[disabled]{opacity:.6;cursor:default}
+.pub:focus-visible,.del:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.hctl{display:flex;gap:8px;align-items:center}
+.theme{font:inherit;font-size:16px;line-height:1;width:36px;height:36px;border-radius:6px;border:1px solid var(--rule);background:var(--surface);cursor:pointer;flex:none}
+.theme:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.attimg img{display:block;max-width:100%;max-height:360px;border-radius:6px;border:1px solid var(--rule);background:var(--paper)}
+.attfile,.attlink{display:inline-block;font-size:14px;color:var(--blue);text-decoration:underline;text-underline-offset:3px;word-break:break-all}
+.add input[type=file]{padding:6px;font-size:13px}
+.status b{font-weight:700}
+.lnk{font:inherit;font-size:13px;background:none;border:0;padding:0;color:inherit;text-decoration:underline;text-underline-offset:2px;cursor:pointer}
+.lnk:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.penf{display:flex;flex-wrap:wrap;align-items:center;gap:8px}
+.penf label{font-weight:600}
+.penf input{font:inherit;font-size:15px;color:var(--ink);background:var(--surface);border:1px solid var(--rule);border-radius:6px;padding:6px 10px;flex:1;min-width:140px}
+.penf input:focus-visible{outline:2px solid var(--blue);outline-offset:1px}
+.pub.sm{padding:6px 14px;font-size:13px}
+.penhint{flex-basis:100%}
+.issues{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:0 0 12px}
+.ilab{font-size:12px;color:var(--muted);font-weight:600}
+.ibtn{font:inherit;font-size:14px;border:1px solid var(--rule);background:var(--surface);color:var(--ink);border-radius:999px;padding:5px 14px;cursor:pointer}
+.ibtn .ititle{color:var(--muted);font-size:13px}
+.ibtn[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--surface)}
+.ibtn[aria-pressed="true"] .ititle{color:var(--surface);opacity:.85}
+.ibtn:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.itag{display:inline-block;font-family:var(--f-ui);font-size:11px;font-weight:600;color:var(--blue);background:var(--blue-soft);border-radius:999px;padding:0 8px;margin-inline-end:4px}
+[hidden]{display:none!important}
+.theme#tour-btn{font-family:var(--f-torah);font-weight:800;font-size:18px;color:var(--blue)}
+.tour{position:fixed;inset:0;z-index:50}
+.tour-spot{position:fixed;border-radius:8px;box-shadow:0 0 0 9999px rgba(10,16,24,.62);outline:2px solid var(--blue);pointer-events:none;transition:all .2s ease}
+.tour-card{position:fixed;left:50%;transform:translateX(-50%);width:min(360px,calc(100vw - 32px));background:var(--surface);color:var(--ink);border:1px solid var(--rule);border-radius:10px;box-shadow:0 10px 30px rgba(0,0,0,.25);padding:14px 16px;display:flex;flex-direction:column;gap:6px}
+.tour-card.center{top:50%;transform:translate(-50%,-50%)}
+.tour-card h3{margin:0;font-family:var(--f-torah);font-size:19px;text-wrap:balance}
+.tour-card p{margin:0;font-size:14.5px;line-height:1.6}
+.tour-nav{display:flex;align-items:center;gap:8px;margin-top:6px}
+.tour-sp{flex:1}
+.tour-prev{font:inherit;font-size:13px;background:none;border:1px solid var(--rule);color:var(--ink);border-radius:6px;padding:6px 12px;cursor:pointer}
+.tour-prev:focus-visible,.tour-nav .lnk:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+.tour:not([hidden])~*{}
+@media (prefers-reduced-motion:reduce){.tour-spot{transition:none}}
+.grp{border-radius:8px;padding:2px 12px 6px;margin-top:12px;border-inline-start:4px solid var(--gc);background:var(--gt)}
+.g-beer{--gc:var(--blue);--gt:var(--beer-tint)}
+.g-trad{--gc:var(--trad);--gt:var(--trad-tint)}
+.g-comm{--gc:var(--comm);--gt:var(--comm-tint)}
+.grp .group{color:var(--gc);border-bottom-color:color-mix(in srgb,var(--gc) 35%,transparent);margin-top:8px;font-size:12px}
+.grp .group::before{content:"";display:inline-block;width:8px;height:8px;border-radius:50%;background:var(--gc);margin-inline-end:6px;vertical-align:middle}
+.grp .gc{color:var(--gc);opacity:.8}
+.grp .it{border-bottom-color:color-mix(in srgb,var(--gc) 22%,transparent)}
+.grp .ctx{background:var(--surface)}
+.grp .add{border-top:1px dashed color-mix(in srgb,var(--gc) 40%,transparent);padding-top:6px;margin-top:8px}
+.grp .add .group{border:0;margin-top:2px}
+.grp .add.ro{border-top:1px dashed color-mix(in srgb,var(--gc) 40%,transparent)}
+.it.comm .mark,.it.comm .ttl{color:var(--comm)}
+#panel:not(.inline) .it{border-inline-start:3px solid var(--rule);padding-inline-start:10px;margin-top:6px;border-bottom:0;border-radius:0 4px 4px 0}
+#panel:not(.inline) .it.beer{border-inline-start-color:var(--blue);background:var(--beer-tint)}
+#panel:not(.inline) .it.trad{border-inline-start-color:var(--trad);background:var(--trad-tint)}
+#panel:not(.inline) .it.comm{border-inline-start-color:var(--comm);background:var(--comm-tint)}
+.mk.beer{color:var(--blue)} .mk.trad{color:var(--trad)}
+.pcount{display:flex!important;flex-wrap:wrap;gap:4px 12px}
+.pc{display:inline-flex;align-items:center;gap:5px;font-size:12px}
+.pc i{display:inline-block;width:8px;height:8px;border-radius:50%}
+.pc.beer{color:var(--blue)} .pc.beer i{background:var(--blue)}
+.pc.trad{color:var(--trad)} .pc.trad i{background:var(--trad)}
+.pc.comm{color:var(--comm)} .pc.comm i{background:var(--comm)}
+header{position:relative}
+#a11y-btn.on{border-color:var(--blue);color:var(--blue);background:var(--blue-soft)}
+#a11y-btn{color:var(--ink);display:inline-flex;align-items:center;justify-content:center}
+.a11y{position:fixed;top:calc(env(safe-area-inset-top,0px) + 12px);left:max(16px,env(safe-area-inset-left,0px));z-index:40;max-height:calc(100vh - 24px);overflow:auto;width:min(300px,calc(100vw - 32px));background:var(--surface);border:1px solid var(--rule);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.18);padding:12px 14px;display:flex;flex-direction:column;gap:4px}
+.a11y-h{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.a11y-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:7px 0;border-bottom:1px solid var(--rule);font-size:14px;cursor:pointer}
+.a11y-row input{width:20px;height:20px;accent-color:var(--blue)}
+.a11y-fs{display:flex;align-items:center;gap:6px}
+.a11y-fs button{font:inherit;font-weight:700;min-width:40px;height:34px;border:1px solid var(--rule);border-radius:6px;background:var(--paper);color:var(--ink);cursor:pointer}
+.a11y-fs button[disabled]{opacity:.4;cursor:default}
+.a11y-fs output{min-width:44px;text-align:center;font-variant-numeric:tabular-nums;font-size:13px}
+.a11y-reset{align-self:flex-start;margin-top:6px}
+.a11y input:focus-visible,.a11y-fs button:focus-visible{outline:2px solid var(--blue);outline-offset:2px}
+/* accessibility modes */
+.a-spacing .para{line-height:2.3;word-spacing:.08em}
+.a-spacing .body,.a-spacing .fx,.a-spacing .ctext,.a-spacing p{line-height:1.95}
+.a-font{--f-torah:"IBM Plex Sans Hebrew","Arial Hebrew",Arial,sans-serif}
+.a-font .para{font-weight:400}
+:root.a-contrast{--muted:var(--ink);--rule:#5b6876;--beer-tint:transparent;--trad-tint:transparent;--comm-tint:transparent}
+.a-contrast .grp{border-inline-start-width:6px;border:2px solid var(--gc)}
+.a-contrast .para,.a-contrast .body,.a-contrast .fx{font-weight:500}
+.a-links a,.a-links .lnk{text-decoration:underline!important;text-decoration-thickness:2px!important}
+.a-links button,.a-links .para,.a-links summary{outline:1px dashed color-mix(in srgb,var(--blue) 60%,transparent);outline-offset:1px}
+.a-motion *,.a-motion *::before{transition:none!important;animation:none!important;scroll-behavior:auto!important}
+.empty{color:var(--muted);font-size:14px}
+footer{margin-top:28px;font-size:12px;color:var(--muted);border-top:1px solid var(--rule);padding-top:10px;display:flex;flex-direction:column;gap:4px}
+</style>
+
+<div class="wrap" dir="rtl" lang="he">
+  <header>
+    <div>
+      <div class="eyebrow">תורה שבענן · פרשת השבוע למהנדסים</div>
+      <h1 id="ititle"></h1>
+      <div class="ref" id="iref"></div>
+    </div>
+    <div class="hctl"><button class="theme" id="a11y-btn" aria-label="נגישות" aria-haspopup="dialog" aria-expanded="false" aria-controls="a11y" title="נגישות"><svg viewBox="0 0 24 24" width="20" height="20" aria-hidden="true"><circle cx="12" cy="4.2" r="2" fill="currentColor"/><path d="M5 8.5c2.3.7 4.6 1 7 1s4.7-.3 7-1M12 9.5v5m0 0-3 6m3-6 3 6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></button><button class="theme" id="tour-btn" aria-label="מדריך: איך משתמשים בדף" title="מדריך">?</button><button class="theme" id="theme-btn" aria-label="מעבר בין מצב יום ולילה" title="מצב יום / לילה"></button><div class="modes" role="group" aria-label="תצוגה">
+      <button id="m-seg" aria-pressed="true">לפי פסקה</button>
+      <button id="m-person" aria-pressed="false">לפי מפרש</button>
+    </div></div>
+  </header>
+  <nav class="issues" id="issues" aria-label="בחירת עלון"></nav>
+  <p class="status" id="status" hidden></p>
+  <p class="note" id="hint"></p>
+  <div class="chips" id="chips" hidden></div>
+  <div class="daf">
+    <div class="essay" id="essay"></div>
+    <aside class="panel" id="panel" aria-live="polite"></aside>
+  </div>
+  <footer>
+    <span>הטקסט, המקורות ועמודת באר הפוטנציאל לקוחים מהעלון. המקורות המלאים מספריא. <span id="ifoot"></span></span>
+    <span>פירושי הקהילה וה-👍 נשמרים בדף ומוצגים לכל המשתתפים.</span>
+    <span>אביב בריגר · aviv.bry@gmail.com</span>
+  </footer>
+</div>
+<div class="a11y" id="a11y" dir="rtl" lang="he" role="dialog" aria-label="הגדרות נגישות" hidden>
+    <div class="a11y-h"><b>נגישות</b><button class="lnk" id="a11y-close">סגירה</button></div>
+    <div class="a11y-row"><span>גודל טקסט</span><div class="a11y-fs"><button id="fs-dn" aria-label="הקטנת טקסט">א−</button><output id="fs-val" aria-live="polite">100%</output><button id="fs-up" aria-label="הגדלת טקסט">א+</button></div></div>
+    <label class="a11y-row"><span>ריווח שורות מוגדל</span><input type="checkbox" id="a-spacing"></label>
+    <label class="a11y-row"><span>ניגודיות גבוהה</span><input type="checkbox" id="a-contrast"></label>
+    <label class="a11y-row"><span>גופן פשוט לקריאה</span><input type="checkbox" id="a-font"></label>
+    <label class="a11y-row"><span>הדגשת קישורים וכפתורים</span><input type="checkbox" id="a-links"></label>
+    <label class="a11y-row"><span>ללא אנימציות</span><input type="checkbox" id="a-motion"></label>
+    <button class="lnk a11y-reset" id="a11y-reset">איפוס הגדרות</button>
+  </div>
+<div id="tour" class="tour" dir="rtl" lang="he" hidden role="dialog" aria-modal="true" aria-labelledby="tour-t">
+  <div class="tour-spot" id="tour-spot"></div>
+  <div class="tour-card" id="tour-card">
+    <div class="tour-step mini" id="tour-n"></div>
+    <h3 id="tour-t"></h3>
+    <p id="tour-b"></p>
+    <div class="tour-nav"><button class="lnk" id="tour-skip">דילוג</button><span class="tour-sp"></span><button class="tour-prev" id="tour-prev">הקודם</button><button class="pub sm" id="tour-next">הבא</button></div>
+  </div>
+</div>
+
+<script>
+const ISSUES=[{"essay": [{"lead": "ההורג בשוגג", "segs": [["b1a", "ההורג בשוגג גולה לעיר מקלט."], ["b1b", "אין בו כוונה ואין בו רשעות, ובכל זאת הוא נעקר ממקומו, ומשך גלותו אינו תלוי בחומרת המעשה, אלא במות הכהן הגדול."], ["b1c", "ולא רק הוא: דוד, שנלחם את מלחמות ה׳, אינו בונה את המקדש, ״דם לרוב שפכת״;"], ["b1d", "וכהן שהרג נפש, אפילו בשוגג, אינו נושא את כפיו."], ["b1e", "אם אלה עונשים, הם תמוהים. ויש פרט מפתיע: ערי המקלט הן ערי הלויים."], ["b1f", "ההורג נשלח לגור אצל השבט שאין לו נחלה באדמה, כאילו נכנס לאותה מציאות: אדם שאין לו עוד קרקע משלו."], ["b1g", "אולי אין כאן עונש כלל, אלא תיאור של מציאות שנוצרה: ״כי הדם הוא יחניף את הארץ״."], ["b1h", "זהו מעין חוק שימור של הרוח: רצח אינו מכלה את רוחו של הנרצח. היא אינה נעלמת, אלא מאבדת את הגוף שהחזיק אותה ונשארת בעולם בלי מקום."], ["b1i", "ולכן אחרי הריגה, גם בשוגג, מידה כנגד מידה נוצר מצב חדש, ובו גם להורג אין מקום עם האדמה שלו."], ["b1j", "זו מערכת עיוורת, כמו יד שנכנסת לאש: היא מגיבה למה שקרה."], ["b1k", "האם המצב הזה הפיך? כדי לנסות לענות נחזור לשפיכת הדם הראשונה."]]}, {"lead": "גן עדן", "segs": [["b2a", "גן עדן הוא מצב של אחדות גבוהה יותר. האדם, שנוצר ״עפר מן האדמה״, חי בהרמוניה עם האדמה, עם החיות ועם ה׳ המתהלך בגן."], ["b2b", "אך מספיק חטא אחד כדי לשבור האחדות הזו, ככדור שעומד על פסגה חלקה ואינו יכול להישאר שם נוכח כל סטייה אינפיניטסימלית מנקודת שיווי המשקל, והוא מתגלגל לאחד הצדדים למצב אנרגטי נמוך יותר."], ["b2c", "כך המציאות האחדותית נשברת והשבר מתגלם בשני הבנים."], ["b2d", "הבל, רועה הצאן, לוקח את הקו של אדם, חי וה׳: מנחתו מבכורות צאנו, והיא נרצית."], ["b2e", "קין, עובד האדמה, לוקח את הקו של אדם, אדמה וצומח."], ["b2f", "קין הוא הכבד, בעל המקום, הקשור לקרקע; הבל, כבר בשמו, הוא אד ונשימה: רועה נודד, קל."], ["b2g", "כך גם ביקום המוקדם נולדו מכוח אחד שני חלקיקים: אחד נקשר לשדה שממלא את המרחב וקיבל מסה, והשני נשאר חסר מסה ונע תמיד."], ["b2h", "לשניהם שורש אחד, אבל האיחוד ביניהם כבר אינו יכול להתקיים בעולם המוגשם הנמוך יותר באנרגיה."], ["b2i", "המדרש מספר שקין הביא זרע פשתן והבל צמר,"], ["b2j", "ולכן נאסר השעטנז, צמר ופשתים יחדו:"], ["b2k", "חיבור של עולם הבל ועולם קין, שאין לו מקום בעולם שאחרי הגירוש, כמו שאחדות הכוחות חוזרת רק באנרגיות עצומות, ולא בעולם הקר שלנו."], ["b2l", "הנבדלות עצמה אינה חטא, אם כי רק התוצאה שלו."]]}, {"lead": "כל עוד הבל חי,", "segs": [["b3a", "כל עוד הבל חי, הוא עצמו הכלי לאורו, וקין יכול להישאר קין."], ["b3b", "המשימה היא ללמוד לחיות יחד מתוך מציאת מקום הדדי זה בעולמו של זה."], ["b3c", "אבל קין מביא ״מפרי האדמה מנחה לה׳״."], ["b3d", "אולי החטא לא היה שהמנחה הייתה גרועה, אלא שהיא הובאה לה׳ ולא לאח. קין דאג לעבודת ה׳ הפרטית שלו, ניסה ׳לסגור פינה׳ מול השמיים, ולא דאג לאחיו הנודד."], ["b3e", "הוא יכול היה להביא את פרי האדמה להבל, ולקבל ממנו את מה שאין לו. במובן זה, הבל כמחנך גם הוא לא מילא את תפקידו."], ["b3f", "ומה אמר קין להבל? ״ויאמר קין אל הבל אחיו, ויהי בהיותם בשדה״."], ["b3g", "הטקסט שותק. הקשר בין האחים לא נבנה מעולם."]]}, {"lead": "ויקם קין אל הבל אחיו ויהרגהו.", "segs": [["b4a", "ויקם קין אל הבל אחיו ויהרגהו. הבל אינו נעלם מתחת לשמיים; מהותו מתחלקת."], ["b4b", "האדמה ״פצתה את פיה לקחת את דמי אחיך מידך״, ורש״י מפרש שבכך הוסיפה לחטוא: היא קיבלה את הדם והסתירה את הרצח."], ["b4c", "האדמה קולטת את הבל הגשמי, את גופו ודמו, ונעשית ארורה עבור קין."], ["b4d", "וקין קולט את הבל הרוחני, את מהותו: בעל המקום נעשה ״נע ונד״, תכונתו של הרועה. הוא נעשה תערובת של עצמו ושל אחיו, בלי זהות יציבה."], ["b4e", "מה שלא מצא מקום מחוצה לו, נכנס לתוכו ממש. בדומה לכניסת יצר הרע לאחר חטא אדם הראשון, כעת קין צריך למצוא מקום להבל בתוכו."]]}, {"lead": "כי תעבוד את האדמה, לא תוסף תת כוחה לך; נע ונד תהיה בארץ.", "segs": [["b5a", "כי תעבוד את האדמה, לא תוסף תת כוחה לך; נע ונד תהיה בארץ."], ["b5b", "הרש״ר הירש מבחין בין שני הביטויים: ״נע״ ביחס לאדמה, אדם שאין לו מקום מנוחה בקרקע; ו״נד״ ביחס לבני האדם, אדם המנותק מן החברה."], ["b5c", "קין ביקש עולם בלי הבל, וקיבל עולם שבו גם לו עצמו אין עוד מקום ברור."], ["b5d", "מי שנודד אינו קוצר את מה שזרע, ולכן קין אינו נהנה מפרי האדמה."], ["b5e", "והאדמה עצמה ארורה יותר: היא עדיין מחזיקה את כוחה, אבל דורשת עוד ועוד כלים כדי להוציא אותו. רק אצל נח, שלפי רש״י הכין לבני האדם כלי מחרישה, יבוא לכך פתרון."], ["b5f", "והאור של הבל אינו נמוג, לא משום שמשהו מחזיק אותו, אלא משום שאין לו לאן ללכת: הרצח הסיר מהעולם את המקום היחיד שאורו התאים לו, הבל עצמו."], ["b5g", "כמעט כמו אטום מעורר שיכול לפלוט את האור רק אם יש לאור לאן לצאת; במקום שאין בו ״מקום״ לאור, האטום (קין) נשאר מעורר."]]}, {"lead": "וישב בארץ נוד.", "segs": [["b6a", "וישב בארץ נוד. הרמב״ן מפרש שאין זו מנוחה: קין נשאר באותה ארץ, אבל ״ישב נודד תמיד, לא ינוח במקום ממנה כלל״."], ["b6b", "ובכל זאת, דווקא הנע והנד בונה את הדבר הקבוע ביותר: עיר."], ["b6c", "״ויהי בונה עיר״, והכלי יקר מדייק: ״בונה״, בהווה. קין בונה כל הזמן ואינו מגיע לסוף."], ["b6d", "זו קלקלה של חוסר מנוחה. העיר פותרת את בעיית ה״נע״, את המקום, אבל לא את בעיית ה״נד״: הזהות הבלתי פתורה של קין, שנושא בתוכו את הבל."]]}, {"lead": "", "segs": [["b7a", "למרות זאת או בגלל זאת, העיר מולידה משהו חדש."], ["b7b", "הרש״ר הירש מעיר שבכפר האדם מעבד את האדמה, ובעיר האדם עצמו מעובד; ו״עיר״ מלשון עוררות."], ["b7c", "מתוך העיר מתעוררות מהויות אנושיות חדשות, ובהן ניסיון לתת לאור של הבל כלי."], ["b7d", "יבל ויובל מצליחים להביא לעולם את מהויות הרועה: יבל הוא ״אבי יושב אוהל ומקנה״, רועה כהבל אבל עם מקום; ויובל ״אבי כל תופש כינור ועוגב״, נגינת הרועה בשדה, כלי נשיפה, כלי להבל פשוטו כמשמעו."], ["b7e", "וברגע שיש לאור כלי, הוא יכול לצאת מקין, והקללה מתחילה לדעוך, כמו אטום שמוצא סוף-סוף מקום מכוונן לפלוט בו את אורו."], ["b7f", "להבדיל, כך משפחה שאיבדה בן מחפשת לבנות כלים, מפעל, ספר, בית מדרש, שימשיכו את אורו בעולם."], ["b7g", "אבל תובל קין, ״לוטש כל חורש נחושת וברזל״, כבר נושא בשמו את ״קין״: בו הבל וקין עדיין מעורבבים, והבל לא יצא לפועל באמת."], ["b7h", "וכיוון שקין לא הצליח להוציא את הבל לפועל דרך שושלתו, נגזר גם עליו להיהרג בשוגג, בידי צאצאו למך."], ["b7i", "ולפי המדרש, דווקא תובל קין הוא שכיוון את ידו של אביו העיוור."]]}, {"lead": "התיקון", "segs": [["b8a", "התיקון מגיע מכיוון אחר: ״כי שת לי אלהים זרע אחר תחת הבל״."], ["b8b", "שת, מלשון תשתית, הוא הבסיס שממנו יוצא מהלך התיקון כולו."], ["b8c", "משושלתו בא נח, שעליו נאמר ״זה ינחמנו... מן האדמה אשר אררה ה׳״."], ["b8d", "והמהלך מגיע לשלמותו בסוף ספר בראשית. אחרי דורות של אחים שנפרדו, קין והבל, יצחק וישמעאל, יעקב ועשו, בני יעקב נשארים יחד: שנים-עשר שבטים, שונים זה מזה, ובכל זאת שווים, ואיש אינו נדחה."], ["b8e", "ובמיוחד בני יוסף: יעקב שם את אפרים הצעיר לפני מנשה הבכור, ואין קנאה ואין כעס. לכן מברכים עד היום ״ישימך אלהים כאפרים וכמנשה״."], ["b8f", "בסצנת הסיום של ספר בראשית, מופיע מצב אחדותי חדש, שוני בתוך שלם אחד, כמו שלושת ה״צבעים״ של הקוורקים, השונים זה מזה אך שווים לחלוטין, ללא שבירת סימטריה."]]}, {"lead": "אבל בחטא העגל", "segs": [["b9a", "אבל בחטא העגל נשבר השוויון שוב. העבודה, שהייתה בידי הבכורות של כל השבטים, נלקחת מהם ועוברת ללוי לבדו."], ["b9b", "זו שבירת סימטריה שנייה, אבל הפעם היא נעשית לתיקון."], ["b9c", "גם לוי הרג, בשכם, וגם עליו נגזר פיזור, כמו על קין: ״ארור אפם... אחלקם ביעקב ואפיצם בישראל״."], ["b9d", "אבל ״עונש״ הפיזור נעשה לו לתפקיד של מחנך: לוי מפוזר בין השבטים, בלי נחלה, אמון על חינוך העם לתורה, ומחזר על הגרנות לתרומות ולמעשרות."], ["b9e", "ובחטא העגל, אותה קנאות מקבלת כיוון: ״מלאו ידכם היום לה׳״."], ["b9f", "לוי הורג את עובדי האלילים, ובמובן מסוים נעשה אחראי בדיוק על החלק הזה בעם ישראל: על הפולחן."], ["b9g", "לוי מקבל את עבודת המקדש, ושם, בבגדי הכהונה, גם השעטנז מותר: האיחוד של קין והבל מוצא סוף-סוף כלי."], ["b9h", "והתיקון מגיע עד למקום ההרג עצמו: שכם, העיר שבה הרג לוי, נעשית עיר לוויים ועיר מקלט."], ["b9i", "המקום שבו נשפך הדם נעשה המקום שקולט את מי ששפך דם בשוגג."], ["b9j", "מי שהרג בשוגג עוזב את האדמה, מגיע לעיר, ונדרש להתמודד עם תסביך הזהות שנוצר לו."], ["b9k", "בשונה מקין, נראה שהתורה לא מצפה שההורג בשוגג יעשה תיקון בפועל, אלא רק יחזיק מעמד עד למותו של כהן גדול."], ["b9l", "שזו אולי סגירת מעגל הכרחית כדי להראות שאירוע של שפיכת דם הוא אירוע לאומי בלתי הפיך שמשפיע על כולם ואנחנו לא נותנים לאדמה לבלוע את הדם ולהסתירו."]]}, {"lead": "וזו נחלה אמיתית.", "segs": [["b10a", "וזו נחלה אמיתית. ישראל, האדמה היא נחלתם, כקין; לוי, ה׳ הוא נחלתו, כהבל."], ["b10b", "אבל הפעם החיבור בין חומר לרוח מחזיק: יש הדדיות."], ["b10c", "עובד האדמה נותן מפרי אדמתו ללוי, והלוי נותן לו את הקשר לקדושה, והנתינה לה׳ והנתינה לאח הן מעשה אחד: ״ונתתם ממנו את תרומת ה׳ לאהרן הכהן״."], ["b10d", "בדיוק מה שקין לא עשה."], ["b10e", "אלו צריכים לאלו, ולכל אחד יש מקומו. והיעד הוא מנוחה: ״וישבו איש תחת גפנו ותחת תאנתו, ואין מחריד״."], ["b10f", "אבל מנוחה היא תכונה של השלם: אם לאחר אין מנוחה, גם לי אין."]]}], "notes": [{"id": "ber:sא", "s": ["b1a"], "who": "מקורות", "kind": "trad", "mark": "א", "t": "״וישב בה עד מות הכהן הגדול״ (במדבר ל״ה, כ״ה).", "full": [["במדבר לה, כה", "וְהִצִּילוּ הָעֵדָה אֶת־הָרֹצֵחַ מִיַּד גֹּאֵל הַדָּם וְהֵשִׁיבוּ אֹתוֹ הָעֵדָה אֶל־עִיר מִקְלָטוֹ אֲשֶׁר־נָס שָׁמָּה וְיָשַׁב בָּהּ עַד־מוֹת הַכֹּהֵן הַגָּדֹל אֲשֶׁר־מָשַׁח אֹתוֹ בְּשֶׁמֶן הַקֹּדֶשׁ.", "https://www.sefaria.org/Numbers.35.25?lang=he"]]}, {"id": "ber:sב", "s": ["b1c"], "who": "מקורות", "kind": "trad", "mark": "ב", "t": "״דם לרב שפכת... לא תבנה בית לשמי״ (דה״א כ״ב, ח׳).", "full": [["דברי הימים א כב, ח", "וַיְהִי עָלַי דְּבַר־ה׳ לֵאמֹר דָּם לָרֹב שָׁפַכְתָּ וּמִלְחָמוֹת גְּדֹלוֹת עָשִׂיתָ לֹא־תִבְנֶה בַיִת לִשְׁמִי כִּי דָּמִים רַבִּים שָׁפַכְתָּ אַרְצָה לְפָנָי.", "https://www.sefaria.org/I_Chronicles.22.8?lang=he"]]}, {"id": "ber:sג", "s": ["b1d"], "who": "מקורות", "kind": "trad", "mark": "ג", "t": "כהן שהרג את הנפש אינו נושא כפיו (שו״ע או״ח קכ״ח, ל״ה).", "full": [["שולחן ערוך, אורח חיים קכח, לה", "כהן שהרג את הנפש אפילו בשוגג לא ישא את כפיו אפילו עשה תשובה: הגה וי\"א דאם עשה תשובה נושא כפיו ויש להקל על בעלי תשובה שלא לנעול דלת בפניהם והכי נהוג [ד\"ע דלא גרע ממומר וכ\"מ מהג\"מ] [טור רש\"י והרבה פוסקים אגור וב\"י]:", "https://www.sefaria.org/Shulchan_Arukh,_Orach_Chayim.128.35?lang=he"]]}, {"id": "ber:sד", "s": ["b1e"], "who": "מקורות", "kind": "trad", "mark": "ד", "t": "״ואת הערים אשר תתנו ללוים, את שש ערי המקלט״ (במדבר ל״ה, ו׳).", "full": [["במדבר לה, ו", "וְאֵת הֶעָרִים אֲשֶׁר תִּתְּנוּ לַלְוִיִּם אֵת שֵׁשׁ־עָרֵי הַמִּקְלָט אֲשֶׁר תִּתְּנוּ לָנֻס שָׁמָּה הָרֹצֵחַ וַעֲלֵיהֶם תִּתְּנוּ אַרְבָּעִים וּשְׁתַּיִם עִיר.", "https://www.sefaria.org/Numbers.35.6?lang=he"]]}, {"id": "ber:sה", "s": ["b1g"], "who": "מקורות", "kind": "trad", "mark": "ה", "t": "״כי הדם הוא יחניף את הארץ״ (במדבר ל״ה, ל״ג).", "full": [["במדבר לה, לג", "וְלֹא־תַחֲנִיפוּ אֶת־הָאָרֶץ אֲשֶׁר אַתֶּם בָּהּ כִּי הַדָּם הוּא יַחֲנִיף אֶת־הָאָרֶץ וְלָאָרֶץ לֹא־יְכֻפַּר לַדָּם אֲשֶׁר שֻׁפַּךְ־בָּהּ כִּי־אִם בְּדַם שֹׁפְכוֹ.", "https://www.sefaria.org/Numbers.35.33?lang=he"]]}, {"id": "ber:b1", "s": ["b1h"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "1", "dh": "חוקי שימור", "body": ["אנרגיה אינה נוצרת ואינה נעלמת; היא רק עוברת מצורה לצורה. בכל התנגשות נשמרים אנרגיה, תנע ומטען, והתוצאה נקבעת לגמרי לפי המסות, המהירויות והזוויות. אין במשוואות שום איבר של ״כוונה״: כדור ביליארד אינו ״יודע״ אם השחקן כיוון או החטיא, והתנע עובר באותה מידה.", "עמוק יותר: משפט נתר מראה שכל חוק שימור נובע מסימטריה של חוקי הטבע. שימור האנרגיה, למשל, נובע מכך שהחוקים אינם משתנים עם הזמן."], "intext": "כמו שאנרגיה אינה נעלמת, כך רוחו של הנרצח אינה נעלמת; והחוק ״עיוור״: הוא מגיב למה שקרה, לא למה שרצו. לכן אם הורג בשוגג יצר מצב שאין מקום לאדם אחר, הוא מושפע גם כן."}, {"id": "ber:sו", "s": ["b2a"], "who": "מקורות", "kind": "trad", "mark": "ו", "t": "בראשית ב׳, ז׳; ב׳, י״ט; ג׳, ח׳.", "full": [["בראשית ב, ז", "וַיִּיצֶר ה׳ אֱלֹהִים אֶת־הָאָדָם עָפָר מִן־הָאֲדָמָה וַיִּפַּח בְּאַפָּיו נִשְׁמַת חַיִּים וַיְהִי הָאָדָם לְנֶפֶשׁ חַיָּה.", "https://www.sefaria.org/Genesis.2.7?lang=he"], ["בראשית ב, יט", "וַיִּצֶר ה׳ אֱלֹהִים מִן־הָאֲדָמָה כׇּל־חַיַּת הַשָּׂדֶה וְאֵת כׇּל־עוֹף הַשָּׁמַיִם וַיָּבֵא אֶל־הָאָדָם לִרְאוֹת מַה־יִּקְרָא־לוֹ וְכֹל אֲשֶׁר יִקְרָא־לוֹ הָאָדָם נֶפֶשׁ חַיָּה הוּא שְׁמוֹ.", "https://www.sefaria.org/Genesis.2.19?lang=he"], ["בראשית ג, ח", "וַיִּשְׁמְעוּ אֶת־קוֹל ה׳ אֱלֹהִים מִתְהַלֵּךְ בַּגָּן לְרוּחַ הַיּוֹם וַיִּתְחַבֵּא הָאָדָם וְאִשְׁתּוֹ מִפְּנֵי ה׳ אֱלֹהִים בְּתוֹךְ עֵץ הַגָּן.", "https://www.sefaria.org/Genesis.3.8?lang=he"]]}, {"id": "ber:b2", "s": ["b2b"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "2", "dh": "שבירת סימטריה", "body": ["דמיינו כדור על ראש ״כובע מקסיקני״: כל הכיוונים שווים, והמצב סימטרי לגמרי, אבל לא יציב. הכדור חייב להתגלגל לתעלה שמסביב ולבחור נקודה אחת. החוקים נשארו סימטריים; המצב בפועל כבר לא.", "כך קרה ביקום המוקדם: כטריליונית השנייה אחרי המפץ, עם ההתקררות, ״התיישב״ שדה היגס, והכוח האלקטרו-חלש נשבר לשני כוחות: האלקטרומגנטי והחלש."], "intext": "גן עדן הוא ראש הכובע, אחדות שאינה יכולה להחזיק; חטא אחד מספיק כדי שהכדור יתגלגל."}, {"id": "ber:sז", "s": ["b2d"], "who": "מקורות", "kind": "trad", "mark": "ז", "t": "״והבל הביא גם הוא מבכרות צאנו״ (בראשית ד׳, ב׳-ד׳).", "full": [["בראשית ד, ב–ד", "וַתֹּסֶף לָלֶדֶת אֶת־אָחִיו אֶת־הָבֶל וַיְהִי־הֶבֶל רֹעֵה צֹאן וְקַיִן הָיָה עֹבֵד אֲדָמָה. וַיְהִי מִקֵּץ יָמִים וַיָּבֵא קַיִן מִפְּרִי הָאֲדָמָה מִנְחָה לַה׳. וְהֶבֶל הֵבִיא גַם־הוּא מִבְּכֹרוֹת צֹאנוֹ וּמֵחֶלְבֵהֶן וַיִּשַׁע ה׳ אֶל־הֶבֶל וְאֶל־מִנְחָתוֹ.", "https://www.sefaria.org/Genesis.4.2-4?lang=he"]]}, {"id": "ber:b3", "s": ["b2g"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "3", "dh": "מסה ומקום", "body": ["בשבירה נוצרו מאותו שורש שני בוזונים, צירופים ״ניצבים״ של אותם רכיבים. ה-Z נקשר לשדה היגס שממלא את המרחב, וקיבל מסה. הפוטון לא נקשר, ונשאר חסר מסה.", "ומסה היא, במובן עמוק, היכולת לעמוד במקום: חלקיק חסר מסה חייב לנוע תמיד במהירות האור. והמסה אינה תכונה של החלקיק לבדו, אלא של הקשר שלו לשדה."], "intext": "קין, הקשור לאדמה, הוא ה-Z; הבל, הנודד, הוא הפוטון; האדמה היא השדה."}, {"id": "ber:sח", "s": ["b2i"], "who": "מקורות", "kind": "trad", "mark": "ח", "t": "קין הביא פשתן והבל צמר (תנחומא בראשית ט׳; פרקי דרבי אליעזר כ״א).", "full": [["מדרש תנחומא, בראשית ט", "ויבא קין מפרי האדמה, מהו? מן מותר מאכלו. ורבנן אמרי, זרע פשתן היה, והבל הביא גם הוא מבכורות צאנו ומחלבהן לפיכך נאסר צמר ופשתים, שנאמר: לא תלבש שעטנז וגו' (דברים כב, יא). ואמר הקדוש ברוך הוא, אינו דין שיתערב מנחת החוטא עם מנחת הזכאי לפיכך נאסר.", "https://www.sefaria.org/Midrash_Tanchuma,_Bereshit.9.1?lang=he"], ["פרקי דרבי אליעזר כא", "הביא קין מותר מאכלו קליות, זרע פשתן. והביא הבל מבכורות צאנו ומחלביהן, כבשים שלא נגזזו לצמר. ונתעב מנחת קין, ונרצית מנחת הבל, שנאמר: ״וישע ה' אל הבל ואל מנחתו״.", "https://www.sefaria.org/Pirkei_DeRabbi_Eliezer.21.5?lang=he"]]}, {"id": "ber:sט", "s": ["b2j"], "who": "מקורות", "kind": "trad", "mark": "ט", "t": "״לא תלבש שעטנז צמר ופשתים יחדו״ (דברים כ״ב, י״א).", "full": [["דברים כב, יא", "לֹא תִלְבַּשׁ שַׁעַטְנֵז צֶמֶר וּפִשְׁתִּים יַחְדָּו.", "https://www.sefaria.org/Deuteronomy.22.11?lang=he"]]}, {"id": "ber:b4", "s": ["b2k"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "4", "dh": "אחדות באנרגיה גבוהה", "body": ["בעולם הקר שלנו הכוח האלקטרומגנטי והכוח החלש נראים שונים לגמרי: האחד פועל לכל מרחק, השני רק בתוך הגרעין. רק באנרגיות עצומות, כמו בהתנגשויות במאיץ, הם מתנהגים שוב כמעט ככוח אחד. האיחוד קיים בחוקים, אבל אינו מופיע בעולם הרגיל, אלא במקום מיוחד שנבנה לכך."], "intext": "שעטנז, איחוד עולם הבל ועולם קין, אסור בעולם; מקומו רק במקדש."}, {"id": "ber:sי", "s": ["b3c"], "who": "מקורות", "kind": "trad", "mark": "י", "t": "בראשית ד׳, ג׳.", "full": [["בראשית ד, ג", "וַיְהִי מִקֵּץ יָמִים וַיָּבֵא קַיִן מִפְּרִי הָאֲדָמָה מִנְחָה לַה׳.", "https://www.sefaria.org/Genesis.4.3?lang=he"]]}, {"id": "ber:sיא", "s": ["b3f"], "who": "מקורות", "kind": "trad", "mark": "יא", "t": "בראשית ד׳, ח׳.", "full": [["בראשית ד, ח", "וַיֹּאמֶר קַיִן אֶל־הֶבֶל אָחִיו וַיְהִי בִּהְיוֹתָם בַּשָּׂדֶה וַיָּקׇם קַיִן אֶל־הֶבֶל אָחִיו וַיַּהַרְגֵהוּ.", "https://www.sefaria.org/Genesis.4.8?lang=he"]]}, {"id": "ber:sיב", "s": ["b4b"], "who": "מקורות", "kind": "trad", "mark": "יב", "t": "האדמה הוסיפה לחטוא בקבלת הדם (רש״י בראשית ד׳, י״א).", "full": [["רש״י, בראשית ד, יא", "ארור אתה מן האדמה. יוֹתֵר מִמַּה שֶּׁנִּתְקַלְּלָה הִיא כְּבָר בַּעֲוֹנָהּ, וְגַם בָּזוֹ הוֹסִיפָה לַחֲטֹא, אשר פצתה את פיה לקחת את דמי אחיך וגו'. וְהִנְּנִי מוֹסִיף לָהּ קְלָלָה אֶצְלְךָ, לֹא תֹסֵף תֵּת כֹּחָהּ:", "https://www.sefaria.org/Rashi_on_Genesis.4.11.1?lang=he"]]}, {"id": "ber:b5", "s": ["b4d"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "5", "dh": "תערובת בלי זהות", "body": ["הניטרינו נוצר כ״סוג״ מסוים, אבל הסוג הזה הוא צירוף של כמה מצבי מסה. מכיוון שאין לו מסה מוגדרת אחת, כשהוא נע הזהות שלו מתחלפת שוב ושוב: הוא נוצר כסוג אחד ונמדד בהמשך הדרך כסוג אחר (תנודות ניטרינו)."], "intext": "קין, שקלט את הבל הרוחני, הוא צירוף של עצמו ושל אחיו. לכן אינו רק ״נע״, אלא גם ״נד״: זהות שאינה מתייצבת."}, {"id": "ber:sיג", "s": ["b5a"], "who": "מקורות", "kind": "trad", "mark": "יג", "t": "בראשית ד׳, י״ב; אונקלוס: ״גלי ומטלטל״.", "full": [["בראשית ד, יב", "כִּי תַעֲבֹד אֶת־הָאֲדָמָה לֹא־תֹסֵף תֵּת־כֹּחָהּ לָךְ נָע וָנָד תִּהְיֶה בָאָרֶץ.", "https://www.sefaria.org/Genesis.4.12?lang=he"], ["אונקלוס, בראשית ד, יב", "ארי תפלח בארעא לא תוסיף למתן חילה לך מטלטל וגלי תהא בארעא:", "https://www.sefaria.org/Onkelos_Genesis.4.12?lang=he"]]}, {"id": "ber:sיד", "s": ["b5b"], "who": "מקורות", "kind": "trad", "mark": "יד", "t": "״נע״ ביחס לאדמה, ״נד״ ביחס לבני האדם (רש״ר הירש בראשית ד׳, י״ב).", "full": [["רש״ר הירש, בראשית ד, יב", "הטקסט העברי של פירוש זה אינו זמין כאן. לחצו לקריאת הפירוש בספריא (בתרגום לאנגלית).", "https://www.sefaria.org/Rav_Hirsch_on_Torah,_Genesis.4.12?lang=bi"]]}, {"id": "ber:sטו", "s": ["b5e"], "who": "מקורות", "kind": "trad", "mark": "טו", "t": "נח הכין כלי מחרישה (רש״י בראשית ה׳, כ״ט).", "full": [["רש״י, בראשית ה, כט", "זה ינחמנו. יָנַח מִמֶּנּוּ אֶת עִצְּבוֹן יָדֵינוּ. עַד שֶׁלֹּא בָא נֹחַ לֹא הָיָה לָהֶם כְּלֵי מַחֲרֵשָׁה וְהוּא הֵכִין לָהֶם וְהָיְתָה הָאָרֶץ מוֹצִיאָה קוֹצִים וְדַרְדַּרִים כְּשֶׁזּוֹרְעִים חִטִּים, מִקִּלְלָתוֹ שֶׁל אָדָם הָרִאשׁוֹן, וּבִימֵי נֹחַ נָחָה, וְזֶהוּ יְנַחֲמֵנוּ, וְאִם לֹא תְפָרְשֵׁהוּ כָּךְ אֵין טַעַם הַלָּשׁוֹן נוֹפֵל עַל הַשֵּׁם וְאַתָּה צָרִיךְ לִקְרוֹת שְׁמוֹ מְנַחֵם:", "https://www.sefaria.org/Rashi_on_Genesis.5.29.1?lang=he"]]}, {"id": "ber:b6", "s": ["b5g"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "6", "dh": "פער פוטוני", "body": ["פליטת אור אינה יציאה של פוטון שישב באטום, אלא מעבר של האנרגיה אל השדה שמסביב, והיא אפשרית רק אם לשדה יש מצב פנוי בדיוק בתדר הזה (כלל הזהב של פרמי). בוואקום יש תמיד מקום כזה.", "אבל בגביש פוטוני, מבנה מחזורי בקנה מידה של אורך הגל, יש תחום תדרים שבו לאור אין שום מצב, בדומה לפער הפס במוליך-למחצה. אטום שתדרו בתוך הפער כמעט אינו דועך. כמו מזלג כוונון בוואקום, שממשיך לרטוט כי לקול אין לאן ללכת."], "intext": "העולם שאחרי הרצח הוא כגביש עם פער בדיוק בתדר של הבל: לאורו אין לאן לצאת, וקין נשאר ״מעורר״."}, {"id": "ber:sטז", "s": ["b6a"], "who": "מקורות", "kind": "trad", "mark": "טז", "t": "״וישב בארץ נוד״ (בראשית ד׳, ט״ז), ורמב״ן שם.", "full": [["בראשית ד, טז", "וַיֵּצֵא קַיִן מִלִּפְנֵי ה׳ וַיֵּשֶׁב בְּאֶרֶץ־נוֹד קִדְמַת־עֵדֶן.", "https://www.sefaria.org/Genesis.4.16?lang=he"], ["רמב״ן, בראשית ד, טז", "וטעם ויצא קין מלפני ה' כי עוד לא עמד לפניו לעולם, כטעם שאמר \"ומפניך אסתר\". וטעם \"וישב בארץ נוד\", שלא הלך בכל העולם, אבל באותה הארץ ישב נודד תמיד, לא ינוח במקום ממנה כלל, ונקראת \"ארץ נוד\" על שמו לעולם:", "https://www.sefaria.org/Ramban_on_Genesis.4.16.1?lang=he"]]}, {"id": "ber:sיז", "s": ["b6c"], "who": "מקורות", "kind": "trad", "mark": "יז", "t": "״ויהי בנה עיר״ (בראשית ד׳, י״ז), וכלי יקר שם.", "full": [["בראשית ד, יז", "וַיֵּדַע קַיִן אֶת־אִשְׁתּוֹ וַתַּהַר וַתֵּלֶד אֶת־חֲנוֹךְ וַיְהִי בֹּנֶה עִיר וַיִּקְרָא שֵׁם הָעִיר כְּשֵׁם בְּנוֹ חֲנוֹךְ.", "https://www.sefaria.org/Genesis.4.17?lang=he"], ["כלי יקר, בראשית ד, יז", "ויהי בונה עיר. ויבן לא נאמר אלא ויהי בונה לשון הווה, להורות שהיה בונה והולך כל ימיו ולא נגמר בנינו לעולם, כי זה דרכם כסל למו שכל האוהב קניני האדמה כקין וחבריו לעולם הוא בונה והולך ולא יוכל לגמור בנינו כל ימיו לעולם כי לעולם אין בידו מחסורו אשר יחסר לו יש בידו מנה מתאוה עד מאתים כידוע מטבע כל אוהבי הממון וא״כ לעולם הוא בונה והולך וכל ימיו אין לו מנוחה רק נע ונד בארץ כמו קין שהיה נע ונד בארץ...", "https://www.sefaria.org/Kli_Yakar_on_Genesis.4.17.1?lang=he"]]}, {"id": "ber:sיח", "s": ["b7b"], "who": "מקורות", "kind": "trad", "mark": "יח", "t": "רש״ר הירש בראשית ד׳, י״ז.", "full": [["רש״ר הירש, בראשית ד, יז", "הטקסט העברי של פירוש זה אינו זמין כאן. לחצו לקריאת הפירוש בספריא (בתרגום לאנגלית).", "https://www.sefaria.org/Rav_Hirsch_on_Torah,_Genesis.4.17?lang=bi"]]}, {"id": "ber:sיט", "s": ["b7d"], "who": "מקורות", "kind": "trad", "mark": "יט", "t": "יבל, יובל ותובל קין (בראשית ד׳, כ׳-כ״ב).", "full": [["בראשית ד, כ–כב", "וַתֵּלֶד עָדָה אֶת־יָבָל הוּא הָיָה אֲבִי יֹשֵׁב אֹהֶל וּמִקְנֶה. וְשֵׁם אָחִיו יוּבָל הוּא הָיָה אֲבִי כׇּל־תֹּפֵשׂ כִּנּוֹר וְעוּגָב. וְצִלָּה גַם־הִוא יָלְדָה אֶת־תּוּבַל קַיִן לֹטֵשׁ כׇּל־חֹרֵשׁ נְחֹשֶׁת וּבַרְזֶל וַאֲחוֹת תּוּבַל־קַיִן נַעֲמָה.", "https://www.sefaria.org/Genesis.4.20-22?lang=he"]]}, {"id": "ber:b7", "s": ["b7e"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "7", "dh": "מהוד", "body": ["ואם בונים סביב האטום מהוד, שתי מראות שהמרחק ביניהן מכוונן בדיוק לתדר שלו, נוצר בשדה ״מקום״ מותאם לאור הזה. עכשיו הפליטה לא רק מתאפשרת אלא מואצת (אפקט פרסל): העירור דועך, והאטום חוזר למנוחה.", "הכלי אינו קופסה שכולאת את האור, אלא מקום שמקבל אותו ונותן לו להמשיך. כך גם מיתר: בלי גוף תהודה הוא כמעט אינו נשמע; עם גוף תהודה הוא מתמלא בקול."], "intext": "ברגע שיש כלי בתדר של הבל, אוהל, מקנה ונגינה, האור יכול לצאת מקין והקללה דועכת. אבל רק כלי מכוונן: תובל קין, שעדיין נושא את ״קין״ בשמו, אינו כזה."}, {"id": "ber:sכ", "s": ["b7h"], "who": "מקורות", "kind": "trad", "mark": "כ", "t": "למך הורג את קין (רש״י בראשית ד׳, כ״ג).", "full": [["רש״י, בראשית ד, כג", "שמען קולי. שֶׁהָיוּ פּוֹרְשׁוֹת מִמֶּנּוּ מִתַּשְׁמִישׁ, לְפִי שֶׁהָרַג אֶת קַיִן וְאֶת תּוּבַל קַיִן בְּנוֹ, שֶׁהָיָה לֶמֶךְ סוּמָא וְתוּבַל קַיִן מוֹשְׁכוֹ, וְרָאָה אֶת קַיִן וְנִדְמָה לוֹ כְּחַיָּה וְאָמַר לְאָבִיו לִמְשֹׁךְ בַּקֶּשֶׁת וַהֲרָגוֹ, וְכֵיוָן שֶׁיָּדַע שֶׁהוּא קַיִן זְקֵנוֹ הִכָּה כַּף אֶל כַּף וְסָפַק אֶת בְּנוֹ בֵינֵיהֶם וַהֲרָגוֹ, וְהָיוּ נָשָׁיו פּוֹרְשׁוֹת מִמֶּנּוּ וְהוּא מְפַיְּסָן:", "https://www.sefaria.org/Rashi_on_Genesis.4.23.1?lang=he"]]}, {"id": "ber:sכא", "s": ["b8a"], "who": "מקורות", "kind": "trad", "mark": "כא", "t": "בראשית ד׳, כ״ה.", "full": [["בראשית ד, כה", "וַיֵּדַע אָדָם עוֹד אֶת־אִשְׁתּוֹ וַתֵּלֶד בֵּן וַתִּקְרָא אֶת־שְׁמוֹ שֵׁת כִּי שָׁת־לִי אֱלֹהִים זֶרַע אַחֵר תַּחַת הֶבֶל כִּי הֲרָגוֹ קָיִן.", "https://www.sefaria.org/Genesis.4.25?lang=he"]]}, {"id": "ber:sכב", "s": ["b8c"], "who": "מקורות", "kind": "trad", "mark": "כב", "t": "״זה ינחמנו ממעשנו ומעצבון ידינו מן האדמה אשר אררה ה׳״ (בראשית ה׳, כ״ט).", "full": [["בראשית ה, כט", "וַיִּקְרָא אֶת־שְׁמוֹ נֹחַ לֵאמֹר זֶה יְנַחֲמֵנוּ מִמַּעֲשֵׂנוּ וּמֵעִצְּבוֹן יָדֵינוּ מִן־הָאֲדָמָה אֲשֶׁר אֵרְרָהּ ה׳.", "https://www.sefaria.org/Genesis.5.29?lang=he"]]}, {"id": "ber:sכג", "s": ["b8e"], "who": "מקורות", "kind": "trad", "mark": "כג", "t": "״ישמך אלהים כאפרים וכמנשה״ (בראשית מ״ח, י״ד-כ׳).", "full": [["בראשית מח, כ", "וַיְבָרְכֵם בַּיּוֹם הַהוּא לֵאמוֹר בְּךָ יְבָרֵךְ יִשְׂרָאֵל לֵאמֹר יְשִׂמְךָ אֱלֹהִים כְּאֶפְרַיִם וְכִמְנַשֶּׁה וַיָּשֶׂם אֶת־אֶפְרַיִם לִפְנֵי מְנַשֶּׁה.", "https://www.sefaria.org/Genesis.48.20?lang=he"]]}, {"id": "ber:b8", "s": ["b8f"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "8", "dh": "סימטריה שלא נשברת", "body": ["לא כל ריבוי נולד משבירה. לקוורקים שלושה ״צבעים״ שונים, אבל הסימטריה ביניהם אינה נשברת: אף צבע אינו מועדף, וכולם שווים לחלוטין.", "ויותר מזה: קוורק אינו מופיע לבדו לעולם, אלא רק בצירוף שלם ו״ניטרלי״ של כל הצבעים, כמו בפרוטון. שוני אמיתי, בלי היררכיה, בתוך שלם אחד."], "intext": "שבטי יעקב בסוף ספר בראשית: שונים, ובכל זאת שווים, ואין ביניהם קנאה."}, {"id": "ber:sכד", "s": ["b9a"], "who": "מקורות", "kind": "trad", "mark": "כד", "t": "״ואני הנה לקחתי את הלוים... תחת כל בכור״ (במדבר ג׳, י״ב), ורש״י שם: העבודה הייתה בבכורות, וכשחטאו בעגל נפסלו.", "full": [["במדבר ג, יב", "וַאֲנִי הִנֵּה לָקַחְתִּי אֶת־הַלְוִיִּם מִתּוֹךְ בְּנֵי יִשְׂרָאֵל תַּחַת כׇּל־בְּכוֹר פֶּטֶר רֶחֶם מִבְּנֵי יִשְׂרָאֵל וְהָיוּ לִי הַלְוִיִּם.", "https://www.sefaria.org/Numbers.3.12?lang=he"], ["רש״י, במדבר ג, יב", "ואני הנה לקחתי. וַאֲנִי מֵהֵיכָן זָכִיתִי בָהֶן מתוך בני ישראל שֶׁיִּהְיוּ יִשְׂרָאֵל שׂוֹכְרִין אוֹתָן לְשֵׁרוּת שֶׁלִּי? עַ\"יְ הַבְּכוֹרוֹת זָכִיתִי בָהֶם וּלְקַחְתִּים תְּמוּרָתָם. לְפִי שֶׁהָיְתָה הָעֲבוֹדָה בַּבְּכוֹרוֹת, וּכְשֶׁחָטְאוּ בָעֵגֶל נִפְסְלוּ, וְהַלְוִיִּם שֶׁלֹּא עָבְדוּ עֲ\"זָ נִבְחֲרוּ תַחְתֵּיהֶם (עי' זבחים קי\"ב):", "https://www.sefaria.org/Rashi_on_Numbers.3.12.1?lang=he"]]}, {"id": "ber:sכה", "s": ["b9c"], "who": "מקורות", "kind": "trad", "mark": "כה", "t": "בראשית מ״ט, ה׳-ז׳.", "full": [["בראשית מט, ה–ז", "שִׁמְעוֹן וְלֵוִי אַחִים כְּלֵי חָמָס מְכֵרֹתֵיהֶם. בְּסֹדָם אַל־תָּבֹא נַפְשִׁי בִּקְהָלָם אַל־תֵּחַד כְּבֹדִי כִּי בְאַפָּם הָרְגוּ אִישׁ וּבִרְצֹנָם עִקְּרוּ־שׁוֹר. אָרוּר אַפָּם כִּי עָז וְעֶבְרָתָם כִּי קָשָׁתָה אֲחַלְּקֵם בְּיַעֲקֹב וַאֲפִיצֵם בְּיִשְׂרָאֵל.", "https://www.sefaria.org/Genesis.49.5-7?lang=he"]]}, {"id": "ber:sכו", "s": ["b9d"], "who": "מקורות", "kind": "trad", "mark": "כו", "t": "לוי מחזר על הגרנות לתרומות ולמעשרות (רש״י בראשית מ״ט, ז׳).", "full": [["רש״י, בראשית מט, ז", "אחלקם ביעקב. אַפְרִידֵם זֶה מִזֶּה שֶׁלֹּא יְהֵא לֵוִי בְּמִנְיַן הַשְּׁבָטִים, וַהֲרֵי הֵם חֲלוּקִים. דָּבָר אַחֵר אֵין לְךָ עֲנִיִּים וְסוֹפְרִים וּמְלַמְּדֵי תִינוֹקוֹת אֶלָּא מִשִּׁמְעוֹן, כְּדֵי שֶׁיִּהְיוּ נְפוֹצִים, וְשִׁבְטוֹ שֶׁל לֵוִי עֲשָׂאוֹ מְחַזֵּר עַל הַגְּרָנוֹת לַתְּרוּמוֹת וְלַמַּעַשְׂרוֹת, נָתַן לוֹ תְּפוּצָתוֹ דֶּרֶךְ כָּבוֹד:", "https://www.sefaria.org/Rashi_on_Genesis.49.7.2?lang=he"]]}, {"id": "ber:sכז", "s": ["b9e"], "who": "מקורות", "kind": "trad", "mark": "כז", "t": "״מי לה׳ אלי״; ״מלאו ידכם היום לה׳״ (שמות ל״ב, כ״ו-כ״ט).", "full": [["שמות לב, כו–כט", "וַיַּעֲמֹד מֹשֶׁה בְּשַׁעַר הַמַּחֲנֶה וַיֹּאמֶר מִי לַה׳ אֵלָי וַיֵּאָסְפוּ אֵלָיו כׇּל־בְּנֵי לֵוִי. וַיֹּאמֶר לָהֶם כֹּה־אָמַר ה׳ אֱלֹהֵי יִשְׂרָאֵל שִׂימוּ אִישׁ־חַרְבּוֹ עַל־יְרֵכוֹ עִבְרוּ וָשׁוּבוּ מִשַּׁעַר לָשַׁעַר בַּמַּחֲנֶה וְהִרְגוּ אִישׁ־אֶת־אָחִיו וְאִישׁ אֶת־רֵעֵהוּ וְאִישׁ אֶת־קְרֹבוֹ. וַיַּעֲשׂוּ בְנֵי־לֵוִי כִּדְבַר מֹשֶׁה וַיִּפֹּל מִן־הָעָם בַּיּוֹם הַהוּא כִּשְׁלֹשֶׁת אַלְפֵי אִישׁ. וַיֹּאמֶר מֹשֶׁה מִלְאוּ יֶדְכֶם הַיּוֹם לַה׳ כִּי אִישׁ בִּבְנוֹ וּבְאָחִיו וְלָתֵת עֲלֵיכֶם הַיּוֹם בְּרָכָה.", "https://www.sefaria.org/Exodus.32.26-29?lang=he"]]}, {"id": "ber:sכח", "s": ["b9g"], "who": "מקורות", "kind": "trad", "mark": "כח", "t": "שעטנז בבגדי כהונה (יומא ס״ט ע״א).", "full": [["יומא סט ע״א", "פושטין ומקפלין ומניחין אותן תחת ראשיהן, שמעת מינה בגדי כהונה ניתנו ליהנות בהן! אמר רב פפא: לא תימא תחת ראשיהן, אלא אימא כנגד ראשיהן. אמר רב משרשיא: שמעת מינה תפילין מן הצד שפיר דמי. הכי נמי מסתברא דכנגד ראשיהן, דאי סלקא דעתך תחת ראשיהן, ותיפוק לי משום כלאים — דהא איכא אבנט. ונהי נמי דניתנו ליהנות בהן — הא מתהני מכלאים!", "https://www.sefaria.org/Yoma.69a.2-3?lang=he"]]}, {"id": "ber:sכט", "s": ["b9h"], "who": "מקורות", "kind": "trad", "mark": "כט", "t": "שכם עיר מקלט ועיר לוויים (יהושע כ׳, ז׳; כ״א, כ״א).", "full": [["יהושע כ, ז", "וַיַּקְדִּשׁוּ אֶת־קֶדֶשׁ בַּגָּלִיל בְּהַר נַפְתָּלִי וְאֶת־שְׁכֶם בְּהַר אֶפְרָיִם וְאֶת־קִרְיַת אַרְבַּע הִיא חֶבְרוֹן בְּהַר יְהוּדָה.", "https://www.sefaria.org/Joshua.20.7?lang=he"], ["יהושע כא, כא", "וַיִּתְּנוּ לָהֶם אֶת־עִיר מִקְלַט הָרֹצֵחַ אֶת־שְׁכֶם וְאֶת־מִגְרָשֶׁהָ בְּהַר אֶפְרָיִם וְאֶת־גֶּזֶר וְאֶת־מִגְרָשֶׁהָ.", "https://www.sefaria.org/Joshua.21.21?lang=he"]]}, {"id": "ber:sל", "s": ["b10c"], "who": "מקורות", "kind": "trad", "mark": "ל", "t": "במדבר י״ח, כ״ח.", "full": [["במדבר יח, כח", "כֵּן תָּרִימוּ גַם־אַתֶּם תְּרוּמַת ה׳ מִכֹּל מַעְשְׂרֹתֵיכֶם אֲשֶׁר תִּקְחוּ מֵאֵת בְּנֵי יִשְׂרָאֵל וּנְתַתֶּם מִמֶּנּוּ אֶת־תְּרוּמַת ה׳ לְאַהֲרֹן הַכֹּהֵן.", "https://www.sefaria.org/Numbers.18.28?lang=he"]]}, {"id": "ber:sלא", "s": ["b10e"], "who": "מקורות", "kind": "trad", "mark": "לא", "t": "מיכה ד׳, ג׳-ד׳.", "full": [["מיכה ד, ג–ד", "וְשָׁפַט בֵּין עַמִּים רַבִּים וְהוֹכִיחַ לְגוֹיִם עֲצֻמִים עַד־רָחוֹק וְכִתְּתוּ חַרְבֹתֵיהֶם לְאִתִּים וַחֲנִיתֹתֵיהֶם לְמַזְמֵרוֹת לֹא־יִשְׂאוּ גּוֹי אֶל־גּוֹי חֶרֶב וְלֹא־יִלְמְדוּן עוֹד מִלְחָמָה. וְיָשְׁבוּ אִישׁ תַּחַת גַּפְנוֹ וְתַחַת תְּאֵנָתוֹ וְאֵין מַחֲרִיד כִּי־פִי ה׳ צְבָאוֹת דִּבֵּר.", "https://www.sefaria.org/Micah.4.3-4?lang=he"]]}], "id": "bereshit", "parsha": "בראשית", "title": "נע ונד", "ref": "שבת פרשת בראשית · כ״ט בתשרי תשפ״ז", "foot": ""}, {"essay": [{"lead": "וכל אשר יקרא לו האדם נפש חיה הוא שמו.", "segs": [["1a", "וכל אשר יקרא לו האדם נפש חיה הוא שמו."], ["1b", "לא רק שבמתן השמות אין איסור, חז״ל רואים בזה מעלה של האדם על המלאכים: הם לא ידעו לקרוא לבעלי החיים בשם, ואילו אדם קורא ״זה שור, זה חמור, זה סוס וזה גמל״."], ["1c", "עשרה דורות אחר כך, בבקעה בארץ שנער, אומרים בני האדם: ״הבה נבנה לנו עיר ומגדל וראשו בשמים, ונעשה לנו שם״, והפעם קריאת השם נגמרת בבלבול השפות ובפיזור."], ["1d", "מדוע מתן שם אחד זוכה לתשבוחות, והשני לעונש בידי שמים? לשם כך נשאל ראשית: מה הפעולה שעושה שם?"]]}, {"lead": "שם תוחם.", "segs": [["2a", "שם תוחם. כל עוד לדבר אין שם הוא אמורפי; ברגע שקראנו לו בשם, נתנו לו גבול ונפרדות."], ["2b", "פרקטיקה זו מוכרת בטיפול: מי שאומר על תחושה ״זה כעס״ יוצר הפרדה בינו לבין הרגש, והרגש נעשה חלק עצמאי אך סופי, שאפשר למצוא לו מקום בתוכו."], ["2c", "כך תחושה טוטאלית וסוחפת פתאום קיבלה צורה, שכמעט אפשר לאחוז ביד. את חווית ההקלה הסובייקטיבית אף ניתן לצפות בשינוי מוקדי פעילות המוח."], ["2d", "הצורך בנפרדות פנימית (מתחושות, רגשות) ונפרדות חיצונית (מיתר הבריות) מסתדר מצוין עם הסיפור שהאדם בגן עדן מגדיר את השמות של החיות."], ["2e", "הבהמה, לפי המהר״ל, נקראת על שם ״ב״ה מ״ה״: כל מה שנבראה לשמו כבר נמצא בה, אז ממילא ניתן לתת לה שם ולגדור את המהות שלה."], ["2f", "אבל אם כך, איך יתכן שהאדם קורא לחוה בשם? האם להגדיר את מהותו של אדם?"]]}, {"lead": "ואתה מה שמך?", "segs": [["3a", "ואתה מה שמך? שואל הקב״ה את אדם, והוא עונה: ״אני נאה להיקרא אדם, שנבראתי מן האדמה״."], ["3b", "היפה תואר (פירושו של ר׳ שמואל יפה אשכנזי על המדרש, קושטא, המאה ה-16) מסביר: שמות בעלי החיים ניתנו לפי עצמותם, ועצמות האדם היא נפשו; ובכל זאת קרא לעצמו אדם, ״בשביל שחלקי האדמה מוחשים בו והנפש סתורה בקרבו״, כלומר האדם נקרא על הצד הגלוי שלו."], ["3c", "ומאותה סיבה קרא לקב״ה ״א-דני״, שאנו מכירים אותו רק מפעולותיו, ״אבל עצמותו לא תקרא בשם״."], ["3d", "והמהר״ל נותן זווית קצת שונה, כמעט הפוכה: הרי כל הנמצאים מן האדמה, ומדוע דווקא האדם נקרא על שמה? כי ״האדמה היא מיוחדת בזה שהיא בכח״: היא אינה רק מה שהיא עכשיו, אלא מה שעוד יצמח ממנה, ״וזהו ענין האדם שהוא בכח, ויוצא שלימותו אל הפעל״."], ["3e", "ויש שדרשו את השם גם כלפי מעלה: ״אדם״ מלשון ״אֶדַּמֶּה לעליון״."], ["3f", "שם אחד שפונה לשני כיוונים: אדם נוצר מן האדמה, אבל מגמתו להידמות לעליון."]]}, {"lead": "איך נותנים שם למי שעוד לא יצא אל הפועל כל צורכו?", "segs": [["4a", "איך נותנים שם למי שעוד לא יצא אל הפועל כל צורכו? יצור שהוא ברובו בכח, שהפוטנציאל שלו אינסופי, אינו נתפס כולו בשם אחד."], ["4b", "הוא מתגלה רק חלקית, דרך תפקידים ויחסים: בן זוג, הורה, רועה, עובד אדמה."], ["4c", "כל שם כזה הוא שם של קשר, ולכן הוא ניתן מבחוץ, כמו שאדם יכול לקרוא לחוה רק אחרי שנבנתה ממנו ״עזר כנגדו״."], ["4d", "ומכאן הקושי לתת שם לעצמי. גם כשאדם במדרש ״נתן״ לעצמו שם, נראה מהפשט, וגם לפי הפירוש, שהוא לא הגדיר את עצמו בכללותו, אלא דימה את עצמו מצידו החומרי והסופי, לאדמה."], ["4e", "אז במילים אחרות, השם שלו מתאר רק את צידו הסופי, והצד האינסופי שבו נותר בלי שם ממש."], ["4f", "אבל כאן מתעוררת שאלה. את האמת שאי אפשר להגדיר את הקב״ה בשם, כי הוא אינסופי, עוד קל לנו בימינו לקבל: אין לו גוף ואין לו גבול ולכן גם אין שם שמגדיר את עצמותו, אלא רק הופעות."], ["4g", "אבל איך יכול האדם להיות גם סופי וגם אינסופי?"], ["4h", "למתמטיקה יש לזה תמונה מדויקת: הקטע מ-0 עד 1 קצר וחסום (סופי), ובכל זאת יש בו בדיוק אותה כמות נקודות כמו בישר אינסופי כולו."], ["4i", "כך האדם: ״כל מה שברא הקב״ה בעולמו ברא באדם״, עולם קטן, אותו תוכן בתוך גבול."], ["4j", "יש לו גבול, ולכן אפשר לקרוא לו בשם; ומה שבתוכו אינסופי, ולכן כל אוסף סופי של שמות אנושיים לעולם לא ממצה אותו."], ["4k", "והשם הזה ניתן מלמעלה לאנושות כולה: ״ויקרא את שמם אדם״, שם פתוח, שמצביע על הכח ואינו תוחם אותו."]]}, {"lead": "מה רצו להשיג אנשי בבל בנעשה לנו שם?", "segs": [["5a", "מה רצו להשיג אנשי בבל בנעשה לנו שם? הרי היה להם שם, אדם, כאמור שם פתוח של יצור שהוא בכח."], ["5b", "נראה שיש קשר למציאות ששררה באותה תקופה: ״ויהי כל הארץ שפה אחת ודברים אחדים״."], ["5c", "הנצי״ב מדייק שהתורה אינה מפרטת מה היו אותם ״דברים״, כי החטא לא היה בתוכנם אלא בעצם האחידות; ו״נעשה לנו שם״, לדבריו, הוא מינוי ממונים ״להעניש את העובר״, את מי שיחשוב אחרת."], ["5d", "כאן ההתנגשות חזיתית למודל שהזכרנו מעלה. אם האדם הוא מהות מתפתחת, שמתגלה בעוד ועוד תפקידים, דעות ושפות, הרי שכל חריגה מן הפרדיגמה (שהיא בטבעה אנושית וסופית) היא בדיוק הדרך שבה הכח יוצא אל הפועל."], ["5e", "חברה שמענישה כל מי שחורג ממנה אינה רק מגבילה את חירותו; היא מכריזה שהאדם כבר נגמר, שהוא בהמה, ״בה מה״, שכל מה שבו כבר נמצא."], ["5f", "וזה, לענ״ד, ״נעשה לנו שם״: מהות קולקטיבית מצומצמת וסגורה שהם נותנים לעצמם במקום השם הפתוח שקיבלו."]]}, {"lead": "מה הניע את אנשי בבל לסגירות הזו?", "segs": [["6a", "מה הניע את אנשי בבל לסגירות הזו? אחרי המבול ה׳ מברך את נח ובניו: ״פרו ורבו ומלאו את הארץ״."], ["6b", "אבל מי ששמע שעולם שלם נמחק במים אינו ממהר להתפזר בו."], ["6c", "לפי רש״י, אנשי בבל חששו שהרקיע יתמוטט שוב כבימי המבול, ולכן ביקשו לעשות לו ״סמוכות״, עמוד שיחזיק את השמים שלא יפלו; וחששו ממכה שתפיץ אותם: ״פן נפוץ על פני כל הארץ״."], ["6d", "מי שרוצה להחזיק את השמים צריך את כולם מגובשים יחד."], ["6e", "הם מחפשים מקום אחד שיכיל את כולם, ודווקא בבקעה, שאין בה אבנים, הם מייצרים חומר בניין מלאכותי: ״ותהי להם הלבנה לאבן״."], ["6f", "זו התגובה המתבקשת גם היום להסתגלות מול משבר אקלים: להתכנס תחת קונצנזוס ולרתום את מיטב המוחות לפיתוח טכנולוגיה שתשלוט באי-הוודאות האקלימית."], ["6g", "ויש כאן מתח עמוק: קריאה לפעולה דורשת חזית אחידה, ״שפה אחת״, ואילו המדע חי מביקורת מתמדת על כל תיאוריה באשר היא."], ["6h", "כשהקונצנזוס נעשה סיבה להשתיק קולות ביקורתיים, אנחנו קרובים ל״להעניש את העובר״."], ["6i", "ובקיצור, סגירות נולדת מפחד."]]}, {"lead": "במה בעצם הם ביקשו לתמוך?", "segs": [["7a", "במה בעצם הם ביקשו לתמוך? קשה לנו היום להבין את אנשי בבל לפי הפשט של רש״י."], ["7b", "אפשר להציע שבימינו, המאמץ שלנו למנוע מהשמיים ליפול שנית שקול לבקשה שלנו לצמצם את ה׳שארית׳ של המודלים שלנו: לא להשאיר שום מרחב מחוץ לשליטה ולבקרה האנושית-המדעית."], ["7c", "רש״ר הירש מסביר את המילה ״שמים״ כ״שם״ כפול: עבור כל נקודה ביקום, כל שאר המרחב הוא ״שמים״."], ["7d", "שָׁם הוא מקום שאפשר להצביע עליו; שָׁמַיִם הם שָׁם ועוד שָׁם, בלי סוף."], ["7e", "במונחים מתמטיים, השמים אינם קומפקטיים: שום מספר סופי של ״שָׁם״ לא יכסה אותם."], ["7f", "לתמוך בשמים פירושו להגיע לאינסוף במספר סופי של לבנים סופיות. ולכן לא משנה כמה גבוה המגדל: אין בשמים נקודה אחת שאפשר להניח עליה את ראשו, וממילא הוא לעולם לא יחזיק אותם."], ["7g", "ובהקשר המודרני, השמים במובן הרחב לעולם אינם מאפשרים לאדם להבין את המציאות עד תומה: תמיד יש עוד שָׁם שההבנה שלנו אינה מכסה."], ["7h", "ויש כאן גם עיוות של שם האדם עצמו. ״אדמה לעליון״ נאמר במקרא דווקא בפי מלך בבל: ״השמים אעלה... אעלה על במתי עב, אדמה לעליון״."], ["7i", "הדמיון לאלוהים, שהיה טמון בשם הפתוח, נהפך לטיפוס פיזי אל השמים."]]}, {"lead": "ואם לא לשמים, האם היה להם סיכוי להגיע לפחות לעננים?", "segs": [["8a", "ואם לא לשמים, האם היה להם סיכוי להגיע לפחות לעננים? היום אנחנו יודעים שא-לוהים אינו יושב מעל העננים, ושהרקיע אינו תקרה שצריך לתמוך בה."], ["8b", "אבל את השאלה ההנדסית אפשר לשאול כפשוטה: כמה גבוה יכול מגדל לבנים להגיע?"], ["8c", "כל לבנה נושאת את משקל כל מה שמעליה, ועל מנת למנוע קריסה תחת מאמץ לחיצה של לבנים בבסיס, מגדל לבנים שרופות שבסיסו מכסה את כל בקעת שנער מגיע לכל היותר לכ-18 ק״מ."], ["8d", "אז נראה שתיאורטית כן אפשר להגיע מעל העננים, אבל ככל שממשיכים לטפס בגובה, הבסיס נדרש להתרחב פי מיליון כדי לתמוך בגידול של פי 28 לגובה."], ["8e", "הזיגורת שמצאו בבל, אגב, הגיעה לכל היותר לכ-90 מ׳."], ["8f", "אז למיזם לא הייתה באמת יכולת מעשית וגם לא תיאורטית להגיע השמימה, ובכל זאת ה׳ יורד לראות, ואומר: ״ועתה לא יבצר מהם כל אשר יזמו לעשות״."], ["8g", "אם המגדל ממילא נועד להיכשל, למה להתערב? המפרשים מסיטים את המבט מן המגדל אל מה שיבוא אחריו."], ["8h", "הר״ן כותב שבבנייה עצמה לא היה חטא, אבל ״השי״ת צופה למרחוק, ירד למה שימשך מקיבוץ האנשים רעה״."], ["8i", "והנצי״ב מפרט: כשיגמרו את המגדל, עלולים להפוך את האחדות לכפייה בכוח של כל דעה אחרת, עד ״רצח ושוד המשחית את הישוב לגמרי״."], ["8j", "מגדל שנולד מפחד לא מרגיע את הפחד. הוא נעצר בגבול שלו, השמים נשארים רחוקים, וחברה שכל כולה מגויסת לפרויקט אחד, תחפש לכפות את עצמה על הפרט במישור אחר."], ["8k", "הפיזור, אם כך, אינו נקמה על ניסיון מרד שהצליח או שנכשל, אלא הצלה ממה שמיזם היה מוליד."]]}, {"lead": "על כן קרא שמה בבל", "segs": [["9a", "על כן קרא שמה בבל, כי שָׁם בלל ה׳ שפת כל הארץ, ומִשָּׁם הפיצם."], ["9b", "בפסוק החותם נפגשות שתי המילים. הם רצו לעשות לעצמם שֵׁם, וקיבלו שם מבחוץ: ״בבל״, בלבול."], ["9c", "הם רצו להתאחד סביב שם מצומצם כדי להימנע מפיזור, ועונשם הוא ההפצה."], ["9d", "והפיזור הוא גם תיקון: מה שלא עשו מרצון, ״ומלאו את הארץ״, נעשה בכפייה."]]}, {"lead": "ולבי חלל בקרבי.", "segs": [["10a", "ולבי חלל בקרבי. לפי רש״י אנשי בבל פחדו, ונראה שהפחד השתלט עליהם."], ["10b", "הם לא ידעו לתת לו שם ומקום מוגבל ובכך להיפרד ממנו, אז ניסו לתת לעצמם שם כדי להילחם בפחד, והתגייסו כולם, בהתלהבות וללא איזון, למיזם אחד ענק."], ["10c", "ר׳ נחמן מברסלב מלמד דרך אחרת: כמו בבריאה, שבה אור אין סוף צומצם ״ונשאר חלל פנוי״, כך בלב."], ["10d", "אור התלהבות הלב הוא ״אין סוף ואין תכלית לתשוקתו״, ולכן ״צריך לצמצם ההתלהבות, כדי שיישאר בלב חלל״, ורק בתוכו מתגלה עבודת ה׳ ״בהדרגה ובמדה״."], ["10e", "הצמצום הופך תשוקה, שאין לה סוף, לקטע מוגבל בתחום של מ-0 עד 1: יש לו מקום, גדול או קטן, אך אינו משתלט על כל התחום."], ["10f", "וזה התיקון שכל אחד מאיתנו יכול לעשות למגדל בבל: לתת שם להתלהבות שעולה בנו, כמו בטיפול שנותנים שמות לתחושות, לגדור אותן, ולהישאר עם חלל שמבטיח שקולות שונים יישמעו ולא להתפתות לשמוע דברים אחדים שעלולים להוביל למיזמים הרסניים וחסרי תוחלת מתחילתם."]]}], "notes": [{"id": "sא", "s": ["1a"], "who": "מקורות", "kind": "trad", "mark": "א", "t": "בראשית ב׳, י״ט.", "full": [["בראשית ב, יט", "וַיִּצֶר ה׳ אֱלֹהִים מִן־הָאֲדָמָה כׇּל־חַיַּת הַשָּׂדֶה וְאֵת כׇּל־עוֹף הַשָּׁמַיִם וַיָּבֵא אֶל־הָאָדָם לִרְאוֹת מַה־יִּקְרָא־לוֹ וְכֹל אֲשֶׁר יִקְרָא־לוֹ הָאָדָם נֶפֶשׁ חַיָּה הוּא שְׁמוֹ.", "https://www.sefaria.org/Genesis.2.19?lang=he"]]}, {"id": "sב", "s": ["1b"], "who": "מקורות", "kind": "trad", "mark": "ב", "t": "״זה שור, זה חמור, זה סוס וזה גמל״ (בראשית רבה י״ז, ד׳).", "full": [["בראשית רבה יז, ד", "אָמַר רַבִּי אַחָא בְּשָׁעָה שֶׁבָּא הַקָּדוֹשׁ בָּרוּךְ הוּא לִבְרֹאת אֶת הָאָדָם, נִמְלַךְ בְּמַלְאֲכֵי הַשָּׁרֵת, אָמַר לָהֶן (בראשית א, כו): נַעֲשֶׂה אָדָם, אָמְרוּ לוֹ אָדָם זֶה מַה טִּיבוֹ, אָמַר לָהֶן חָכְמָתוֹ מְרֻבָּה מִשֶּׁלָּכֶם, הֵבִיא לִפְנֵיהֶם אֶת הַבְּהֵמָה וְאֶת הַחַיָּה וְאֶת הָעוֹף, אָמַר לָהֶם זֶה מַה שְּׁמוֹ וְלֹא הָיוּ יוֹדְעִין, הֶעֱבִירָן לִפְנֵי אָדָם, אָמַר לוֹ זֶה מַה שְּׁמוֹ, אָמַר זֶה שׁוֹר, זֶה חֲמוֹר, זֶה סוּס וְזֶה גַּמָּל", "https://www.sefaria.org/Bereshit_Rabbah.17.4?lang=he"]]}, {"id": "sג", "s": ["1c"], "who": "מקורות", "kind": "trad", "mark": "ג", "t": "בראשית י״א, ד׳.", "full": [["בראשית יא, ד", "וַיֹּאמְרוּ הָבָה נִבְנֶה־לָּנוּ עִיר וּמִגְדָּל וְרֹאשׁוֹ בַשָּׁמַיִם וְנַעֲשֶׂה־לָּנוּ שֵׁם פֶּן־נָפוּץ עַל־פְּנֵי כׇל־הָאָרֶץ.", "https://www.sefaria.org/Genesis.11.4?lang=he"]]}, {"id": "b1", "s": ["2c"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "1", "dh": "תיוג רגשי (affect labeling)", "body": ["בניסוי של ליברמן ועמיתיו (UCLA, 2007) הוצגו לנבדקים תמונות של פנים זועמות או מפוחדות, בזמן סריקת fMRI. כשהתבקשו לתת לרגש שבתמונה שם, הפעילות באמיגדלה, מרכז התגובה הרגשית, ירדה, ואזור בקליפה הקדם-מצחית הימנית (rVLPFC) הופעל. עצם המילה מווסת את הרגש."], "intext": "השם מפריד: הרגש עובר מ״אני כולי״ ל״חלק בתוכי״, מאש אמורפית לדבר שיש לו גבול."}, {"id": "sד", "s": ["2e"], "who": "מקורות", "kind": "trad", "mark": "ד", "t": "״והבהמה נקראת בשם ׳בהמה׳, על שם ב״ה מ״ה״ (מהר״ל, תפארת ישראל ג׳).", "full": [["מהר״ל, תפארת ישראל, פרק ג", "והבהמה נקראת בשם 'בהמה', על שם ב\"ה מ\"ה. רצה לומר כי שלימות דבר שנברא עליו - נמצא בה, אף על גב שאינו שלמות גמור, מכל מקום דבר זה נמצא עמה. וזהו 'בה מה', כי דבר מה נמצא עמה. הרי שכל אחד יורה שמו עליו.", "https://www.sefaria.org/Tiferet_Yisrael.3.4?lang=he"]]}, {"id": "sה", "s": ["3a"], "who": "מקורות", "kind": "trad", "mark": "ה", "t": "״ואתה מה שמך?״ (בראשית רבה י״ז, ד׳).", "full": [["בראשית רבה יז, ד", "וְאַתָּה מַה שְּׁמֶךָ, אָמַר לוֹ אֲנִי נָאֶה לְהִקָּרֵא אָדָם שֶׁנִּבְרֵאתִי מִן הָאֲדָמָה, וַאֲנִי מַה שְּׁמִי, אָמַר לוֹ לְךָ נָאֶה לְהִקָרְאוֹת אֲדֹנָי, שֶׁאַתָּה אָדוֹן לְכָל בְּרִיּוֹתֶיךָ", "https://www.sefaria.org/Bereshit_Rabbah.17.4?lang=he"]]}, {"id": "sו", "s": ["3c"], "who": "מקורות", "kind": "trad", "mark": "ו", "t": "יפה תואר על בראשית רבה י״ז, ד׳.", "full": [["יפה תואר על בראשית רבה יז, ד", "ואתה מה שמך כו'. הנה שמות הבעלי חיים הם לפי תכונתם עצמותם וגדרם. וגדר ועצמות האדם הלא הוא שבו נפש יקרה. ובכ\"ז קרא את שמו אדם בשביל שחלקי האדמה מוחשים בו והנפש סתורה בקרבו. ומטעם זה קרא ג\"כ את ה' בשם אדני כי אנחנו מכירים אותו רק מפעולותיו וממשלתו אשר בארץ. והוא האדון על הכל אבל עצמותו לא תקרא בשם:", "https://www.sefaria.org/Yefeh_To'ar_on_Bereshit_Rabbah.17.4.2?lang=he"]]}, {"id": "sז", "s": ["3d"], "who": "מקורות", "kind": "trad", "mark": "ז", "t": "מהר״ל, תפארת ישראל ג׳.", "full": [["מהר״ל, תפארת ישראל, פרק ג", "ויראה ששמו מורה על דבר העצמי לו, שהוא מיוחד בו האדם מכל. וזה שהוא נקרא 'אדם' על שהוא עפר מן האדמה. ועתה יש לשאול, וכי כל שאר הנמצאים אינם מן האדמה, שיקרא האדם ביחוד בשם 'אדם' על שם שנברא מן האדמה. אבל ענין האדם מתיחס ביותר אל האדמה. וזה כי האדמה היא מיוחדת בזה שהיא בכח, ויש בה יציאה לפעל כל הדברים אשר יוצאים ממנה; צמחים, ואילנות, ושאר כל הדברים, והיא בכח לכל זה. וזהו ענין האדם שהוא בכח, ויוצא שלימותו אל הפעל. ולפיכך שמו ראוי* לו שיהיה משתתף עם האדמה, שהיא מיוחדת לצאת מן הכח אל הפעל בפירות וצמחים וכל אשר שייך אליה, וכן הוא האדם יוצא כחו אל הפעל.", "https://www.sefaria.org/Tiferet_Yisrael.3.2?lang=he"]]}, {"id": "b0", "s": ["3d"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "", "dh": "פוטנציאל", "body": ["״פוטנציאל״ הוא ה״בכח״ של המהר״ל: מה שעוד לא יצא אל הפועל, ועוד יכול לצאת."], "intext": ""}, {"id": "sח", "s": ["3e"], "who": "מקורות", "kind": "trad", "mark": "ח", "t": "״אדם״ מלשון ״אדמה לעליון״ (ישעיהו י״ד, י״ד), מובא בשם השל״ה.", "full": [["ישעיהו יד, יד", "אֶעֱלֶה עַל־בָּמֳתֵי עָב אֶדַּמֶּה לְעֶלְיוֹן.", "https://www.sefaria.org/Isaiah.14.14?lang=he"], ["של״ה, תולדות אדם, הקדמה", "ויקרא את שמם אדם (בראשית ה, ב), זהו פירוש על תולדות אדם, וסופו אם דבוק הוא למעלה ומתדמה לו ית' לילך בדרכיו נקרא שמו בעצם אדם מלשון (ישעיה יד, יד) אדמה לעליון, ועל כסא דמות אדם (יחזקאל א, כז). ואם הוא מפריד את עצמו מהדביקות, אז נקרא אדם על שם האדמה אשר לוקח ממנה ועפר הוא ולעפר ישוב. אמנם שם אדם המורה על אדמה לעליון זהו עיקר התכלית, כי הרע לא נברא רק בעבור הטוב כדפירשתי, על כן שם אדם בעצם, שכן עולה במספר כשמו הגדול במילואו יו\"ד ה\"א וא\"ו ה\"א:", "https://www.sefaria.org/Shenei_Luchot_HaBerit,_Toldot_Adam,_Introduction.50?lang=he"]]}, {"id": "sט", "s": ["4c"], "who": "מקורות", "kind": "trad", "mark": "ט", "t": "בראשית ב׳, כ״ג; ג׳, כ׳.", "full": [["בראשית ב, כג", "וַיֹּאמֶר הָאָדָם זֹאת הַפַּעַם עֶצֶם מֵעֲצָמַי וּבָשָׂר מִבְּשָׂרִי לְזֹאת יִקָּרֵא אִשָּׁה כִּי מֵאִישׁ לֻקְחָה־זֹּאת.", "https://www.sefaria.org/Genesis.2.23?lang=he"], ["בראשית ג, כ", "וַיִּקְרָא הָאָדָם שֵׁם אִשְׁתּוֹ חַוָּה כִּי הִוא הָיְתָה אֵם כׇּל־חָי.", "https://www.sefaria.org/Genesis.3.20?lang=he"]]}, {"id": "b2", "s": ["4h"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "2", "dh": "עוצמת הרצף", "body": ["הקטע (0,1) קטן וחסום, ובכל זאת יש בו בדיוק אותה כמות נקודות כמו בישר כולו. הפונקציה tan(π(x−½)) מתאימה לכל נקודה בקטע נקודה אחת ויחידה בישר, וכל נקודה בישר מתקבלת: ליד הקצוות היא ״מותחת״ את הקטע עד אינסוף. קנטור קרא לגודל הזה עוצמת הרצף. וכל תת-קטע, קטן ככל שיהיה, הוא שוב בעל אותה עוצמה."], "intext": "״כל מה שברא הקב״ה בעולמו ברא באדם״: התאמה אחד לאחד בין העולם הגדול לעולם הקטן. האדם סופי בגבולותיו, ואינסופי בתוכו."}, {"id": "sי", "s": ["4i"], "who": "מקורות", "kind": "trad", "mark": "י", "t": "אבות דרבי נתן, סוף פרק ל״א.", "full": [["אבות דרבי נתן, פרק לא", "... הרים ובקעות בעולם הרים ובקעות באדם עומד דומה להר נופל דומה לבקעה. הא למדת שכל מה שברא הקב״ה בעולמו ברא באדם:", "https://www.sefaria.org/Avot_DeRabbi_Natan.31.3?lang=he"]]}, {"id": "b3", "s": ["4j", "7e"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "3", "dh": "קומפקטיות וכיסוי בשמות", "body": ["מרחב קומפקטי הוא מרחב שמכל כיסוי שלו אפשר לבחור מספר סופי של חלקים שעדיין מכסים הכול. הקטע הסגור [0,1] קומפקטי; הישר כולו לא. על הישר, קומפקטי פירושו סגור וחסום (היינה–בורל).", "ובתיאוריה את [0,1] אפשר לכסות אפילו בשני ״שמות״: [0,0.4] ו-(0.4,1]. אבל זה דורש גבול חד לגמרי, בדיוק של אינסוף ספרות: 0.4 עצמו שייך לראשון, וכל מספר גדול ממנו, קרוב ככל שיהיה, לשני.", "שם אנושי אינו חד כך. הוא במקרה הטוב דומה לגדר בין שתי חצרות: יש לה עובי משלה, והרצועה שהיא תופסת אינה שייכת לאף אחת מהן. כל גבול בין שני שמות משאיר רצועה כזאת, ולכן אוסף סופי של שמות אנושיים משאיר חורים."], "intext": "האדם, כמו [0,1], חסום, ולכן אפשר לקרוא לו בשם; אבל השמות שלנו עבים מכדי למצות אותו. ולשמים אין גבול כלל: תמיד חסר בהם עוד שָׁם."}, {"id": "sיא", "s": ["4k"], "who": "מקורות", "kind": "trad", "mark": "יא", "t": "״ויקרא את שמם אדם״ (בראשית ה׳, ב׳).", "full": [["בראשית ה, ב", "זָכָר וּנְקֵבָה בְּרָאָם וַיְבָרֶךְ אֹתָם וַיִּקְרָא אֶת־שְׁמָם אָדָם בְּיוֹם הִבָּרְאָם.", "https://www.sefaria.org/Genesis.5.2?lang=he"]]}, {"id": "sיב", "s": ["5b"], "who": "מקורות", "kind": "trad", "mark": "יב", "t": "בראשית י״א, א׳.", "full": [["בראשית יא, א", "וַיְהִי כׇל־הָאָרֶץ שָׂפָה אֶחָת וּדְבָרִים אֲחָדִים.", "https://www.sefaria.org/Genesis.11.1?lang=he"]]}, {"id": "sיג", "s": ["5c"], "who": "מקורות", "kind": "trad", "mark": "יג", "t": "העמק דבר בראשית י״א, א׳-ד׳.", "full": [["העמק דבר, בראשית יא, א", "ודברים אחדים. לא ביאר הכתוב הדברים אלא ברמז כמבואר במדרשים אבל לא פירשן הכתוב כי אם שהיו דברים אחדים וללמדנו דלא משום הדברים התעורר הקב״ה. כי אם בשביל שהיו אחדים. יהיו מה שיהיו. ודבר זה אם כי לפי הנראה אין בזה שום עון ואדרבה חבור עצבים ג״כ ראוי להניח. אבל כאן גרם לחשוב דבר שיצא לתקלת הישוב כאשר יבואר:", "https://www.sefaria.org/Haamek_Davar_on_Genesis.11.1.2?lang=he"], ["העמק דבר, בראשית יא, ד", "ונעשה לנו שם. אנשים משגיחים וממונים על הדבר ויהיו שרי צבא להעניש את העובר. דבל״ז אינו מועיל המגדל. כ״ז היה לחשש. פן נפוץ על פני כל הארץ. אמנם יש להבין מה חששו אם יצאו כמה לארץ אחרת. ומובן שזה היה שייך לדברים אחדים שהיה ביניהם ובאשר אין דעות ב״א שוים חששו שלא יצאו ב״א מדעה זו ויהיו במחשבה אחרת ע״כ היו משגיחים שלא יצא איש מישוב שלהם. ומי שסר מדברים אחדים שביניהם היה משפטו לשריפה כאשר עשו לא״א. נמצא היו דברים אחדים שביניהם לרועץ שהחליטו להרוג את מי שלא יחשוב כדעתם. ויבואר עוד להלן ו׳:", "https://www.sefaria.org/Haamek_Davar_on_Genesis.11.4.2?lang=he"]]}, {"id": "sיד", "s": ["6a"], "who": "מקורות", "kind": "trad", "mark": "יד", "t": "בראשית ט׳, א׳; ט׳, ז׳.", "full": [["בראשית ט, א", "וַיְבָרֶךְ אֱלֹהִים אֶת־נֹחַ וְאֶת־בָּנָיו וַיֹּאמֶר לָהֶם פְּרוּ וּרְבוּ וּמִלְאוּ אֶת־הָאָרֶץ.", "https://www.sefaria.org/Genesis.9.1?lang=he"], ["בראשית ט, ז", "וְאַתֶּם פְּרוּ וּרְבוּ שִׁרְצוּ בָאָרֶץ וּרְבוּ־בָהּ.", "https://www.sefaria.org/Genesis.9.7?lang=he"]]}, {"id": "sטו", "s": ["6c"], "who": "מקורות", "kind": "trad", "mark": "טו", "t": "רש״י בראשית י״א, א׳; י״א, ד׳.", "full": [["רש״י, בראשית יא, א", "ודברים אחדים. בָּאוּ בְעֵצָה אַחַת וְאָמְרוּ לֹא כָּל הֵימֶנּוּ שֶׁיָּבֹר לוֹ אֶת הָעֶלְיוֹנִים, נַעֲלֶה לָרָקִיעַ וְנַעֲשֶׂה עִמּוֹ מִלְחָמָה. דָּבָר אַחֵר עַל יְחִידוֹ שֶׁל עוֹלָם. דָּבָר אַחֵר וּדְבָרִים אֲחָדִים – אָמְרוּ אַחַת לְאֶלֶף ותרנ\"ו שָׁנִים הָרָקִיעַ מִתְמוֹטֵט כְּשֵׁם שֶׁעָשָׂה בִּימֵי הַמַּבּוּל, בֹּאוּ וְנַעֲשֶׂה לוֹ סְמִיכוֹת (ב\"ר):", "https://www.sefaria.org/Rashi_on_Genesis.11.1.2?lang=he"], ["רש״י, בראשית יא, ד", "פן נפוץ. שֶׁלֹּא יָבִיא עָלֵינוּ שׁוּם מַכָּה לַהֲפִיצֵנוּ מִכָּאן:", "https://www.sefaria.org/Rashi_on_Genesis.11.4.1?lang=he"]]}, {"id": "sטז", "s": ["6e"], "who": "מקורות", "kind": "trad", "mark": "טז", "t": "חיפשו מקום שיכיל את כולם (רש״י בראשית י״א, ב׳, מובא ברמב״ן).", "full": [["רש״י, בראשית יא, ב", "בנסעם מקדם. שֶׁהָיוּ יוֹשְׁבִים שָׁם, כְּדִכְתִיב לְמַעְלָה וַיְהִי מוֹשָׁבָם וְגו' הַר הַקֶּדֶם וְנָסְעוּ מִשָּׁם לָתוּר לָהֶם מָקוֹם לְהַחֲזִיק אֶת כֻּלָּם וְלֹא מָצְאוּ אֶלָּא שִׁנְעָר:", "https://www.sefaria.org/Rashi_on_Genesis.11.2.1?lang=he"], ["רמב״ן, בראשית יא, ב", "בְּנָסְעָם מִקֶּדֶם פֵּרֵשׁ רַשִׁ\"י (רש\"י על בראשית י\"א:ב') שֶׁהָיוּ יוֹשְׁבִים שָׁם, כַּכָּתוּב לְמַעְלָה (י ל) \"וַיְהִי מוֹשָׁבָם מִמֵּשָׁא בֹּאֲכָה סְפָרָה הַר הַקֶּדֶם\", וְנָסְעוּ מִשָּׁם לָתוּר לָהֶם מָקוֹם הַמַּחְזִיק אוֹתָם, וְלֹא מָצְאוּ אֶלָּא שִׁנְעָר.", "https://www.sefaria.org/Ramban_on_Genesis.11.2.1?lang=he"]]}, {"id": "sיז", "s": ["6e"], "who": "מקורות", "kind": "trad", "mark": "יז", "t": "״שאין אבנים בבבל, שהיא בקעה״ (רש״י בראשית י״א, ג׳).", "full": [["רש״י, בראשית יא, ג", "לבנים. שֶׁאֵין אֲבָנִים בְּבָבֶל, שֶׁהִיא בִּקְעָה:", "https://www.sefaria.org/Rashi_on_Genesis.11.3.3?lang=he"]]}, {"id": "b4", "s": ["6h"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "4", "dh": "קונצנזוס וביקורת", "body": ["סקירה של כ-88,000 מאמרים מצאה שיותר מ-99% מהספרות המדעית מסכימה שההתחממות הנוכחית נגרמת בידי האדם (Lynas ועמיתיו, 2021). מנגד, הסוציולוג רוברט מרטון מנה כבר ב-1942 את ה״ספקנות המאורגנת״ בין נורמות היסוד של המדע: כל טענה עומדת לבדיקה. ויש שמעידים על מחירה: האקלימאית ג׳ודית קרי עזבה ב-2017 את האקדמיה בגלל ״הטירוף״ שבתחום."], "intext": "קונצנזוס הוא תוצאה של ביקורת שעמדה במבחן, לא תחליף לה."}, {"id": "b5", "s": ["7b"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "5", "dh": "מודלים ושארית", "body": ["מודל מנבא את המדידה, והשארית (residual) היא ההפרש בין הנמדד לנובא. מודל טוב משאיר בשארית רעש בלי מבנה; דפוס שנשאר בה מצביע על מה שהמודל עוד לא יודע. ומודל שמאפס אותה ״לומד בעל פה״ גם את הרעש (overfitting) ונכשל בניבוי חדש.", "במערכות כאוטיות, כמו מזג האוויר, השארית גם גדלה מעצם טבען: הבדל זעיר בתנאי ההתחלה מועצם אקספוננציאלית עם הזמן (לורנץ, 1963), ולכן גם מודל מושלם מאבד את כוח הניבוי של מזג האוויר אחרי כשבועיים. מודלי אקלים עוקפים זאת חלקית: הם מנבאים ממוצעים סטטיסטיים, לא את מזג האוויר עצמו. ״כל המודלים שגויים, אבל חלקם מועילים״ (ג׳ורג׳ בוקס)."], "intext": "השארית היא השָׁם שמחוץ למודל; מי שמבקש לאפס אותה מבקש לסגור את הפער מול השמים."}, {"id": "sיח", "s": ["7c"], "who": "מקורות", "kind": "trad", "mark": "יח", "t": "שמים כ״שם״ כפול (רש״ר הירש בראשית א׳, א׳).", "full": [["רש״ר הירש, בראשית א, א", "הטקסט העברי של פירוש זה אינו זמין כאן. לחצו לקריאת הפירוש בספריא (בתרגום לאנגלית).", "https://www.sefaria.org/Rav_Hirsch_on_Torah,_Genesis.1.1?lang=bi"]]}, {"id": "sיט", "s": ["7h"], "who": "מקורות", "kind": "trad", "mark": "יט", "t": "״ונשאת המשל הזה על מלך בבל״ (ישעיהו י״ד, ד׳); ״השמים אעלה... אדמה לעליון״ (שם, י״ג-י״ד).", "full": [["ישעיהו יד, ד", "וְנָשָׂאתָ הַמָּשָׁל הַזֶּה עַל־מֶלֶךְ בָּבֶל וְאָמָרְתָּ אֵיךְ שָׁבַת נֹגֵשׂ שָׁבְתָה מַדְהֵבָה.", "https://www.sefaria.org/Isaiah.14.4?lang=he"], ["ישעיהו יד, יג–יד", "וְאַתָּה אָמַרְתָּ בִלְבָבְךָ הַשָּׁמַיִם אֶעֱלֶה מִמַּעַל לְכוֹכְבֵי־אֵל אָרִים כִּסְאִי וְאֵשֵׁב בְּהַר־מוֹעֵד בְּיַרְכְּתֵי צָפוֹן. אֶעֱלֶה עַל־בָּמֳתֵי עָב אֶדַּמֶּה לְעֶלְיוֹן.", "https://www.sefaria.org/Isaiah.14.13-14?lang=he"]]}, {"id": "b6", "s": ["8c", "8e"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "6", "dh": "מגדל לבנים", "body": ["הלבנה התחתונה נושאת את כל מה שמעליה, ועמוד ישר נמחץ כשהמאמץ בבסיס, ρgh, מגיע לחוזק הלחיצה σ. גובהו המרבי, σ/ρg, אינו תלוי ברוחב: כ-800 מ׳ ללבנה שרופה, כ-5.7 ק״מ לגרניט.", "<b>מגדל מתרחב.</b> אם החתך גדל כלפי מטה כך שהמאמץ אחיד, כל שכבה נושאת גם את משקלה: σ·dA = ρg·A·dz. השטח גדל אקספוננציאלית, ובחתך ריבועי הגובה מוכפל ב-2·ln(B/w) (Timoshenko, Strength of Materials, 1930). בסיס רחב פי מיליון מהראש נותן רק פי 28; ראש של מטר במקום 10 מ׳ מעלה את המגדל רק מ-18 ל-22 ק״מ, כפליים מגובה טיסה.", "<b>עקמומיות וכבידה.</b> על כדור, הבסיס היעיל מוגבל בקוטר כדור הארץ. ובמקום g·h צריך לסכום לאורך המגדל את הכבידה האפקטיבית, GM/r² − ω²r: הכבידה דועכת עם הגובה, והכוח הצנטריפוגלי של הסיבוב גדל, עד שב-36,000 ק״מ (מסלול גאוסטציונרי) לבנה אינה שוקלת דבר. מחוץ לקו המשווה הכוח הצנטריפוגלי גם מכופף את המגדל.", "<b>זיגורת בבל (אטמננקי).</b> בסיס של 91 מ׳ וגובה של 91 מ׳ לפי לוח אסגילה (העתק מאורוך, 229 לפנה״ס; מוזיאון הלובר). Fenollós ועמיתיו (ISIMU, 2005) מעריכים כ-54 מ׳, ועם המקדש בראשו כ-66 מ׳."], "intext": "״אעלה על במתי עב״ אפשרי; ״השמים אעלה״ לא."}, {"id": "sכ", "s": ["8f"], "who": "מקורות", "kind": "trad", "mark": "כ", "t": "בראשית י״א, ו׳.", "full": [["בראשית יא, ו", "וַיֹּאמֶר ה׳ הֵן עַם אֶחָד וְשָׂפָה אַחַת לְכֻלָּם וְזֶה הַחִלָּם לַעֲשׂוֹת וְעַתָּה לֹא־יִבָּצֵר מֵהֶם כֹּל אֲשֶׁר יָזְמוּ לַעֲשׂוֹת.", "https://www.sefaria.org/Genesis.11.6?lang=he"]]}, {"id": "sכא", "s": ["8h"], "who": "מקורות", "kind": "trad", "mark": "כא", "t": "דרשות הר״ן, הדרוש הראשון.", "full": [["דרשות הר״ן, הדרוש הראשון", "והנה אלו האנשים בעת ההיא לא חטאו בדבר לא במעשה ולא במחשבה, אלא הש״י צופה ומביט למרחוק, ירד למה שימשך מקטן האנשים הרעים, והוא אמרו וירד ה' לראות וגו', כלומר ירד והשגיח למה שימשך ממנו, ואם לעת עתה אין רע אמנם הכנוס היה רע להם ורע לעולם, והוא שכלם היו מסכימים על ע״ז. והבקעה ההיא גם כן אשר בחרו להם היא ארץ שנער, היה ראשה ומלכה נמרוד שהיה ראש לעבודה זרה, עד שהציק לאברהם אבינו בחלקו עליה כמו שנודע, ולכן אמר הן עם אחד וגו'.", "https://www.sefaria.org/Derashot_HaRan.1.13?lang=he"]]}, {"id": "sכב", "s": ["8i"], "who": "מקורות", "kind": "trad", "mark": "כב", "t": "העמק דבר בראשית י״א, ו׳.", "full": [["העמק דבר, בראשית יא, ו", "ועתה לא יבצר מהם כל אשר יזמו לעשות. אם יגמרו המגדל יבואו למחשבה שניה למנוע בע״כ היוצא ממחשבתם זו. וזהו דבר רצח ושוד המשחית את הישוב לגמרי ולזה לא מועיל מה שכעת המה מתאחדים בדעה :", "https://www.sefaria.org/Haamek_Davar_on_Genesis.11.6.3?lang=he"]]}, {"id": "sכג", "s": ["9a"], "who": "מקורות", "kind": "trad", "mark": "כג", "t": "בראשית י״א, ט׳.", "full": [["בראשית יא, ט", "עַל־כֵּן קָרָא שְׁמָהּ בָּבֶל כִּי־שָׁם בָּלַל ה׳ שְׂפַת כׇּל־הָאָרֶץ וּמִשָּׁם הֱפִיצָם ה׳ עַל־פְּנֵי כׇּל־הָאָרֶץ.", "https://www.sefaria.org/Genesis.11.9?lang=he"]]}, {"id": "sכד", "s": ["10d"], "who": "מקורות", "kind": "trad", "mark": "כד", "t": "ליקוטי מוהר״ן קמא מ״ט, א׳; ״ולבי חלל בקרבי״ (תהלים ק״ט, כ״ב).", "full": [["ליקוטי מוהר״ן קמא, מט, א", "כי קדם הבריאה היה אור הקדוש ברוך הוא אין סוף, ורצה הקדוש ברוך הוא שיתגלה מלכותו, ואין מלך בלא עם, והצרך לברא בני אדם, שיקבלו על מלכותו. והתגלות מלכותו אי אפשר להשיג אלא על ידי המדות, שעל ידי המדות משיגין אלקותו, ויודעין שיש אדון מושל ומנהיג. וצמצם את האור אין סוף לצדדין, ונשאר חלל פנוי, ובתוך החלל הפנוי ברא העולמות (כמבואר בע\"ח בתחילתו בהיכל א ענף ג), והן הן מדותיו. כי הלב הוא צור העולמים, הינו צור המדות, כי לפי אור להביות הלב של איש הישראלי אי אפשר להתגלות מהמדות, כי אור להביותו הוא עד אין סוף, הינו אין סוף ואין תכלית לתשוקתו. וצריך לצמצם ההתלהבות, כדי שישאר בלב חלל, כמו שכתוב (תהילים ק״ט:כ״ב): ולבי חלל בקרבי. ועל ידי הצמצום של ההתלהבות יוכל לבוא להתגלות מהמדות, הינו לעבד את השם יתברך בהדרגה ובמדה.", "https://www.sefaria.org/Likutei_Moharan.49.1?lang=he"], ["תהלים קט, כב", "כִּי־עָנִי וְאֶבְיוֹן אָנֹכִי וְלִבִּי חָלַל בְּקִרְבִּי.", "https://www.sefaria.org/Psalms.109.22?lang=he"]]}, {"id": "b7", "s": ["10e"], "who": "באר הפוטנציאל", "kind": "beer", "mark": "7", "dh": "מידה", "body": ["בקטע [0,1] יש אינסוף נקודות באורך אפס, ובכל זאת אורכו 1. חלקו אותו שוב ושוב לשניים: האורך קטן, והעוצמה נשארת."], "intext": "הצמצום נותן לתשוקה שאין לה סוף ״מדה״, והאינסוף שבפנים אינו מתמעט."}], "id": "noach", "parsha": "נח", "title": "נעשה לנו שם", "ref": "שבת פרשת נח · ו׳ בחשון תשפ״ז", "foot": "בעלון המודפס יש גם גרף של גובה המגדל מול רוחב הבסיס."}];
+
+const STATIC=["באר הפוטנציאל","מקורות"];
+const KIND={beer:"באר הפוטנציאל",trad:"מקורות",comm:"מפרש"};
+const ISSUE_BY_ID=Object.fromEntries(ISSUES.map(i=>[i.id,i]));
+const ISSUE_ORDER=Object.fromEntries(ISSUES.map((i,k)=>[i.id,k]));
+const SEGS={}, SEGPARA={}, SEGNUM={}, SEGISSUE={};
+ISSUES.forEach(is=>{ let n=0; is.essay.forEach((p,pi)=>p.segs.forEach(([id,t])=>{ SEGS[id]=t; SEGPARA[id]=pi; SEGNUM[id]=++n; SEGISSUE[id]=is.id; })); });
+const C=ISSUES.flatMap(i=>i.notes);
+let ESSAY=ISSUES[ISSUES.length-1].essay;
+const curIssue=()=>ISSUE_BY_ID[state.issue];
+const inPara=(c,pi)=>c.s.some(x=>SEGISSUE[x]===state.issue&&SEGPARA[x]===pi);
+const $=id=>document.getElementById(id);
+const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
+
+let state={issue:ISSUES[ISSUES.length-1].id,mode:"para",para:null,person:"באר הפוטנציאל",draft:{seg:"",dh:"",text:""}};
+let assets=null,db=null,user=null,me={id:null,isOwner:false},writable=false,readOnlyReason="loading";
+let commDocs={}, likeDocs={}, names={}, pens={}; let editingPen=false;
+let openIds=new Set();
+
+/* ---------- derived data ---------- */
+function community(){
+  const out=[];
+  for(const [uid,items] of Object.entries(commDocs)) for(const [cid,o] of Object.entries(items||{})){
+    if(!o||(!String(o.text||"").trim()&&!o.link&&!o.att)) continue;
+    const s=(Array.isArray(o.s)?o.s:[]).filter(x=>x in SEGS); if(!s.length) continue;
+    out.push({id:"c:"+uid+":"+cid,cid,uid,kind:"comm",who:uid,s,whole:!!o.whole,dh:String(o.dh||""),t:String(o.text||""),at:String(o.at||""),link:safeUrl(String(o.link||"")),att:(o.att&&/^[A-Za-z0-9]{8,64}$/.test(String(o.att.id||"")))?{id:String(o.att.id),type:String(o.att.type||""),name:String(o.att.name||"קובץ")}:null});
+  }
+  return out;
+}
+function safeUrl(u){ try{ const x=new URL(u); return (x.protocol==="https:"||x.protocol==="http:")?x.href:""; }catch(e){ return ""; } }
+const ALL=()=>C.concat(community());
+const likes=c=>{let n=0;for(const k in likeDocs) if(likeDocs[k]&&likeDocs[k][c.id]) n++;return n;};
+const iLiked=id=>!!(me.id&&likeDocs[me.id]&&likeDocs[me.id][id]);
+const whoName=w=>STATIC.includes(w)?w:(pens[w]||names[w]||"משתתף/ת");
+const myPen=()=>me.id?(pens[me.id]||""):"";
+const firstSeg=(c,pi)=>c.s.filter(x=>pi==null||(SEGISSUE[x]===state.issue&&SEGPARA[x]===pi)).sort((a,b)=>ISSUE_ORDER[SEGISSUE[a]]-ISSUE_ORDER[SEGISSUE[b]]||SEGNUM[a]-SEGNUM[b])[0];
+
+/* ---------- rendering ---------- */
+function likeBtn(c){
+  const dis=writable?"":" disabled";
+  return `<button class="like" data-id="${esc(c.id)}" aria-pressed="${iLiked(c.id)}" aria-label="לייק"${dis}>👍 ${likes(c)}</button>`;
+}
+function head(c){
+  if(c.kind==="beer") return `<span class="mark">${c.mark||"✦"}</span><span class="ttl">${esc(c.dh)}</span>`;
+  if(c.kind==="trad") return `<span class="mark">${c.mark}</span><span class="ref">${esc(c.t)}</span>`;
+  return `<span class="mark">💬</span><span class="ttl">${esc(whoName(c.who))}</span><span class="dhs">${c.att||c.link?(c.att&&c.att.type.startsWith("image/")?"🖼 ":c.att?"📄 ":"🔗 "):""}${esc(c.dh||(c.t?c.t.slice(0,48)+(c.t.length>48?"…":""):(c.att?c.att.name:"קישור")))}</span><span class="lc">👍 ${likes(c)}</span>`;
+}
+function body(c){
+  if(c.kind==="beer") return `<div class="body">${c.body.map(p=>`<p>${p}</p>`).join("")}${c.intext?`<div class="intext"><b>ובטקסט:</b> ${esc(c.intext)}</div>`:""}</div><div class="foot"><span></span>${likeBtn(c)}</div>`;
+  if(c.kind==="trad") return c.full&&c.full.length? c.full.map(([r,t,u])=>`<div class="ft"><a class="fr" href="${u}" target="_blank" rel="noopener">${esc(r)} <span class="ext">בספריא ↗</span></a><a class="fx" href="${u}" target="_blank" rel="noopener">${esc(t)}</a></div>`).join("") : `<p class="empty">הטקסט המלא של מקור זה עדיין לא זמין כאן.</p>`;
+  const when=c.at?new Date(c.at).toLocaleDateString("he-IL",{day:"numeric",month:"short"}):"";
+  const canDel=writable&&(c.uid===me.id||me.isOwner);
+  let extra="";
+  if(c.att){ const src="/_blob/"+c.att.id;
+    extra+= c.att.type.startsWith("image/")
+      ? `<a class="attimg" href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${esc(c.att.name)}" loading="lazy"></a>`
+      : `<a class="attfile" href="${src}" target="_blank" rel="noopener">📄 ${esc(c.att.name)}</a>`; }
+  if(c.link){ let host=""; try{host=new URL(c.link).hostname.replace(/^www\./,"");}catch(e){} extra+=`<a class="attlink" href="${esc(c.link)}" target="_blank" rel="noopener">🔗 ${esc(host||c.link)}</a>`; }
+  return `${c.dh?`<div class="dh">${esc(c.dh)}</div>`:""}${c.t?`<div class="body ctext">${esc(c.t)}</div>`:""}${extra}<div class="foot"><span class="mini">${esc(whoName(c.who))}${when?" · "+when:""}${canDel?` · <button class="del" data-id="${esc(c.id)}">מחיקה</button>`:""}</span>${likeBtn(c)}</div>`;
+}
+function item(c,pi){
+  const sid=firstSeg(c,pi);
+  const is=ISSUE_BY_ID[SEGISSUE[sid]]; const tag=(pi==null&&ISSUES.length>1)?`<span class="itag">${esc(is.parsha)}</span> `:"";
+  const plead=is.essay[SEGPARA[sid]].lead||is.essay[SEGPARA[sid]].segs[0][1].slice(0,60)+"…";
+  const ctx=c.whole?`<button class="ctx" data-s="${sid}">${tag}<span class="mini">על כל הפסקה</span> ${esc(plead)}</button>`:`<button class="ctx" data-s="${sid}">${tag}<span class="mini">על המשפט</span> ${esc(SEGS[sid])}</button>`;
+  const open=openIds.has(c.id)?" open":"";
+  return `<details class="it ${c.kind}" data-id="${esc(c.id)}"${open}><summary>${head(c)}<span class="chev" aria-hidden="true"></span></summary><div class="in">${ctx}${body(c)}</div></details>`;
+}
+function addForm(pi){
+  if(!writable) return `<div class="add ro"><p class="mini">${readOnlyText()}</p></div>`;
+  const d=state.draft;
+  const opts=ESSAY[pi].segs.map(([id,t])=>`<option value="${id}"${d.seg===id?" selected":""}>משפט ${SEGNUM[id]}: ${esc(t.slice(0,60))}${t.length>60?"…":""}</option>`).join("");
+  return `<form class="add" id="add-form" autocomplete="off" novalidate>
+    <div class="group">הוספת פירוש</div>
+    ${myPen()?"":`<label class="fl" for="add-pen">שם המפרש שלך (יוצג ליד כל הפירושים שלך)</label><input id="add-pen" maxlength="30" value="${esc(d.pen||"")}" placeholder="למשל: בעל הלבנים">`}
+    <label class="fl" for="add-seg">על מה הפירוש?</label>
+    <select id="add-seg"><option value="">על כל הפסקה</option>${opts}</select>
+    <label class="fl" for="add-dh">כותרת קצרה (לא חובה)</label>
+    <input id="add-dh" maxlength="80" value="${esc(d.dh)}" placeholder="למשל: אחדות מול אחידות">
+    <label class="fl" for="add-text">הפירוש שלך</label>
+    <textarea id="add-text" rows="4" maxlength="4000" placeholder="מה הפסקה מעוררת אצלך? הערה, קושיה, מקור נוסף או תיקון.">${esc(d.text)}</textarea>
+    <label class="fl" for="add-link">מקור נוסף: קישור (לא חובה)</label>
+    <input id="add-link" type="url" inputmode="url" dir="ltr" value="${esc(d.link||"")}" placeholder="https://www.sefaria.org/…">
+    ${assets?`<label class="fl" for="add-file">מקור נוסף: תמונה או PDF (לא חובה, עד 20MB)</label>
+    <input id="add-file" type="file" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf">`:""}
+    <div class="addrow"><span class="mini" id="add-msg" aria-live="polite"></span><button type="submit" class="pub" id="add-btn">פרסום</button></div>
+  </form>`;
+}
+function readOnlyText(){
+  if(readOnlyReason==="loading") return "מתחבר…";
+  if(readOnlyReason==="nodb") return "מצב קריאה בלבד. כדי לכתוב פירושים ולסמן 👍 צריך להיכנס עם חשבון Claude שהוזמן לדף הזה.";
+  if(readOnlyReason==="noid") return "מצב קריאה בלבד. כדי לכתוב פירושים צריך להיות מחובר/ת לחשבון Claude.";
+  return "מצב קריאה בלבד. ההרשאה שלך בדף הזה מאפשרת לקרוא בלבד; בקשו מאביב הזמנה ככותב/ת.";
+}
+function renderEssay(){
+  const all=ALL();
+  $("essay").innerHTML=ESSAY.map((p,pi)=>{
+    const inp=all.filter(c=>inPara(c,pi));
+    const nb=inp.filter(c=>c.kind==="beer").length, nt=inp.filter(c=>c.kind==="trad").length, nc=inp.filter(c=>c.kind==="comm").length;
+    const txt=p.segs.map(([id,t],i)=>{
+      let h=esc(t); if(i===0&&t.startsWith(p.lead)) h=`<strong>${esc(p.lead)}</strong>`+esc(t.slice(p.lead.length));
+      const marks=C.filter(c=>c.s.includes(id)&&c.mark);
+      return h+(marks.length?`<sup class="m">${marks.map(c=>`<span class="mk ${c.kind}">${c.mark}</span>`).join(" ")}</sup>`:"");
+    }).join(" ");
+    const cur=state.mode==="para"&&state.para===pi;
+    return `<section data-p="${pi}"><div class="para" role="button" tabindex="0" data-p="${pi}" aria-expanded="${cur}" aria-current="${cur}">${txt}<span class="pcount">${nb?`<span class="pc beer"><i></i>${nb} באר הפוטנציאל</span>`:""}${nt?`<span class="pc trad"><i></i>${nt} מקורות</span>`:""}<span class="pc comm"><i></i>${nc?nc+" מהקהילה":"הוסיפו פירוש"}</span></span></div></section>`;
+  }).join("");
+}
+function renderPanel(){
+  const p=$("panel"); const all=ALL();
+  p.hidden=state.mode==="para"&&state.para==null;
+  if(state.mode==="para"){
+    if(state.para==null){$("essay").after(p);return;}
+    const pi=state.para;
+    const list=all.filter(c=>inPara(c,pi));
+    const pos=c=>SEGNUM[firstSeg(c,pi)];
+    const groups=[["beer","באר הפוטנציאל",(a,b)=>pos(a)-pos(b)],["trad","מקורות",(a,b)=>pos(a)-pos(b)],["comm","מפרשי הקהילה",(a,b)=>likes(b)-likes(a)||(a.at<b.at?-1:1)]];
+    p.innerHTML=`<div class="phead"><h2>${esc((ESSAY[pi].lead||ESSAY[pi].segs[0][1].slice(0,40)+"…").replace(/[.?:,]$/,""))}</h2><button class="close" aria-label="סגירה">✕</button></div><p class="mini hintline">לחצו על פירוש או מקור כדי לפתוח אותו במלואו.</p>`+
+      groups.map(([k,label,sort])=>{const g=list.filter(c=>c.kind===k).sort(sort);
+        if(k==="comm") return `<section class="grp g-comm"><div class="group">${label}${g.length?` <span class="gc">${g.length}</span>`:""}</div>${g.length?g.map(c=>item(c,pi)).join(""):`<p class="empty">עדיין אין פירושים מהקהילה על הפסקה הזו. אפשר להיות הראשונים.</p>`}${addForm(pi)}</section>`;
+        return g.length?`<section class="grp g-${k}"><div class="group">${label} <span class="gc">${g.length}</span></div>`+g.map(c=>item(c,pi)).join("")+`</section>`:""}).join("");
+    document.querySelector(`section[data-p="${pi}"]`).appendChild(p); p.classList.add("inline");
+  }else{
+    const key=c=>{const s=firstSeg(c); return ISSUE_ORDER[SEGISSUE[s]]*10000+SEGNUM[s];};
+    const list=all.filter(c=>c.who===state.person).sort((a,b)=>key(a)-key(b));
+    const total=list.reduce((s,c)=>s+likes(c),0);
+    p.innerHTML=`<div class="phead"><h2>${esc(whoName(state.person))}</h2></div><p class="mini hintline">${list.length} פירושים${state.person==="מקורות"?"":` · ${total} 👍`} · לחצו על פירוש כדי לפתוח אותו.</p>`+(list.length?list.map(c=>item(c,null)).join(""):`<p class="empty">אין כאן פירושים כרגע.</p>`);
+    $("essay").after(p); p.classList.remove("inline");
+  }
+}
+function score(w,all){return all.filter(c=>c.who===w).reduce((s,c)=>s+likes(c),0)}
+function renderChips(){
+  const all=ALL();
+  const people=[...new Set(all.map(c=>c.who))].sort((a,b)=>(a==="מקורות")-(b==="מקורות")||score(b,all)-score(a,all));
+  if(!people.includes(state.person)) state.person=people[0];
+  $("chips").innerHTML=people.map(w=>`<button class="chip" data-p="${esc(w)}" aria-pressed="${w===state.person}">${esc(whoName(w))}${w==="מקורות"?"":` · ${score(w,all)} 👍`}</button>`).join("");
+}
+function renderStatus(){
+  const st=$("status");
+  if(writable){ st.hidden=false; st.className="status ok";
+    if(editingPen){ st.innerHTML=`<form id="pen-form" class="penf" novalidate><label for="pen-in">שם המפרש שלך</label><input id="pen-in" maxlength="30" value="${esc(myPen())}" placeholder="למשל: בעל הלבנים"><button type="submit" class="pub sm">שמירה</button><button type="button" class="lnk" id="pen-cancel">ביטול</button><span class="mini" id="pen-msg" aria-live="polite"></span><span class="mini penhint">השינוי יחול גם על כל הפירושים שכבר כתבת.</span></form>`; }
+    else { const p=myPen(); st.innerHTML= p?`כותב/ת בשם <b>${esc(p)}</b> · <button class="lnk" id="pen-edit">שינוי שם</button>`:`מחובר/ת. לפני הפירוש הראשון כדאי לבחור שם מפרש · <button class="lnk" id="pen-edit">בחירת שם</button>`; }
+  }
+  else if(readOnlyReason==="loading"){ st.hidden=true; }
+  else { st.hidden=false; st.className="status ro"; st.textContent=readOnlyText(); }
+}
+function render(){
+  $("chips").hidden=state.mode!=="person";
+  $("hint").textContent=state.mode==="para"
+    ?"זה העלון עצמו. לחצו על פסקה כדי לראות את כל המפרשים והמקורות שלה ולהוסיף פירוש משלכם."
+    :"בחרו מפרש כדי לקרוא את כל מה שכתב, ברצף. המפרשים ממוינים לפי סך ה-👍.";
+  $("m-seg").setAttribute("aria-pressed",state.mode==="para");
+  $("m-person").setAttribute("aria-pressed",state.mode==="person");
+  $("essay").after($("panel"));
+  $("essay").hidden=state.mode==="person";
+  const is=curIssue(); $("ititle").textContent=is.title; $("iref").textContent=is.ref; $("ifoot").textContent=is.foot||"";
+  $("issues").innerHTML=`<span class="ilab">עלון:</span>`+ISSUES.slice().reverse().map(i=>`<button class="ibtn" data-i="${i.id}" aria-pressed="${i.id===state.issue}">${esc(i.parsha)} <span class="ititle">· ${esc(i.title)}</span></button>`).join("");
+  renderStatus(); renderEssay(); if(state.mode==="person")renderChips(); renderPanel();
+}
+/* re-render from live data without clobbering a half-typed comment */
+let pending=false;
+function liveRender(){ const a=document.activeElement; if(a&&a.closest&&(a.closest("#add-form")||a.closest("#pen-form"))){pending=true;return;} pending=false; render(); }
+document.addEventListener("focusout",e=>{ if(pending&&e.target.closest&&e.target.closest("#add-form")) setTimeout(()=>{ if(!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#add-form"))) liveRender(); },0); });
+
+/* ---------- pen names ---------- */
+function penProblem(n){
+  if(n.length<2) return "השם צריך להכיל לפחות שני תווים.";
+  if(STATIC.includes(n)) return "השם הזה שמור.";
+  const taken=Object.entries(pens).some(([u,v])=>u!==me.id&&String(v).trim()===n);
+  if(taken) return "מפרש אחר כבר בחר בשם הזה.";
+  return "";
+}
+async function savePen(n){
+  await serial("p:"+me.id, async()=>{ await db.doc("penNames/"+me.id).set({name:n}); pens[me.id]=n; });
+}
+/* ---------- writes (one at a time per document) ---------- */
+const chains={};
+function serial(key,fn){ const p=(chains[key]||Promise.resolve()).then(fn,fn); chains[key]=p.catch(()=>{}); return p; }
+function handleWriteError(err,msgEl){
+  const code=err&&err.code;
+  if(code==="invalid_argument"||code==="not_granted"||code==="revoked"){ writable=false; readOnlyReason="denied"; render(); return; }
+  if(msgEl) msgEl.textContent = code==="quota_exceeded"?"המאגר מלא. כדאי למחוק פירושים ישנים.":"השמירה לא הצליחה. נסו שוב בעוד רגע.";
+}
+function newId(){ return Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7); }
+async function addComment(){
+  const form=$("add-form"); if(!form) return;
+  const msg=$("add-msg"), btn=$("add-btn");
+  const text=$("add-text").value.trim(), dh=$("add-dh").value.trim(), seg=$("add-seg").value;
+  const rawLink=$("add-link").value.trim(), link=rawLink?safeUrl(rawLink):"";
+  const fileIn=$("add-file"), file=fileIn&&fileIn.files&&fileIn.files[0];
+  if(rawLink&&!link){ msg.textContent="הקישור צריך להתחיל ב-https://"; $("add-link").focus(); return; }
+  if(!text&&!link&&!file){ msg.textContent="כתבו פירוש, או צרפו קישור או קובץ."; $("add-text").focus(); return; }
+  const penIn=$("add-pen");
+  if(penIn){ const n=penIn.value.trim(); const pr=penProblem(n); if(pr){ msg.textContent=pr; penIn.focus(); return; }
+    try{ await savePen(n); }catch(err){ handleWriteError(err,msg); return; } }
+  if(file&&file.size>20*1024*1024){ msg.textContent="הקובץ גדול מ-20MB."; return; }
+  if(file&&!/^(image\/(png|jpeg|gif|webp)|application\/pdf)$/.test(file.type)){ msg.textContent="אפשר לצרף תמונה (PNG, JPG, GIF, WEBP) או PDF."; return; }
+  const pi=state.para; const sid=seg||ESSAY[pi].segs[0][0];
+  btn.disabled=true; msg.textContent=file?"מעלה את הקובץ…":"שומר…";
+  let att=null;
+  if(file){
+    try{ const r=await assets.upload(file); att={id:r.id,type:r.contentType,name:file.name.slice(0,120)}; }
+    catch(err){ btn.disabled=false; const c=err&&err.code; msg.textContent= c==="too_large"?"הקובץ גדול מדי.":c==="unsupported_type"?"סוג הקובץ לא נתמך.":c==="quota_or_state"?"נגמר המקום לקבצים בדף.":"העלאת הקובץ נכשלה. נסו שוב."; return; }
+    msg.textContent="שומר…";
+  }
+  try{
+    await serial("c:"+me.id, async()=>{
+      const mine=Object.assign({}, commDocs[me.id]||{});
+      const cid=newId();
+      mine[cid]={issue:state.issue,p:pi,s:[sid],whole:!seg,dh,text,link,att,at:new Date().toISOString()};
+      await db.doc("comments/"+me.id).set({items:mine});
+      commDocs[me.id]=mine; openIds.add("c:"+me.id+":"+cid);
+    });
+    state.draft={seg:"",dh:"",text:"",link:"",pen:""}; document.activeElement&&document.activeElement.blur&&document.activeElement.blur(); pending=false; render();
+    const m=$("add-msg"); if(m) m.textContent="הפירוש פורסם.";
+  }catch(err){ btn.disabled=false; handleWriteError(err,msg); }
+}
+async function deleteComment(id){
+  const [,uid,cid]=id.split(":");
+  try{
+    await serial("c:"+uid, async()=>{
+      const items=Object.assign({}, commDocs[uid]||{}); const old=items[cid]; delete items[cid];
+      if(old&&old.att&&old.att.id&&assets){ try{ await assets.delete(old.att.id); }catch(e){} }
+      await db.doc("comments/"+uid).set({items}); commDocs[uid]=items;
+    });
+    openIds.delete(id); render();
+  }catch(err){ handleWriteError(err,null); }
+}
+async function toggleLike(id,btn){
+  if(!writable) return;
+  try{
+    await serial("l:"+me.id, async()=>{
+      const mine=Object.assign({}, likeDocs[me.id]||{});
+      if(mine[id]) delete mine[id]; else mine[id]=true;
+      await db.doc("likes/"+me.id).set({items:mine}); likeDocs[me.id]=mine;
+    });
+    const c=ALL().find(x=>x.id===id); if(btn&&c){ btn.setAttribute("aria-pressed",iLiked(id)); btn.textContent="👍 "+likes(c); }
+  }catch(err){ handleWriteError(err,null); }
+}
+
+/* ---------- events ---------- */
+function openPara(pi){ state.mode="para"; state.para=(state.para===pi)?null:pi; openIds.clear(); render(); }
+document.addEventListener("toggle",e=>{const d=e.target; if(d.matches&&d.matches("details.it")){ d.open?openIds.add(d.dataset.id):openIds.delete(d.dataset.id);} },true);
+document.addEventListener("input",e=>{ const id=e.target.id; if(id==="add-text")state.draft.text=e.target.value; if(id==="add-dh")state.draft.dh=e.target.value; if(id==="add-seg")state.draft.seg=e.target.value; if(id==="add-link")state.draft.link=e.target.value; if(id==="add-pen")state.draft.pen=e.target.value; });
+document.addEventListener("change",e=>{ if(e.target.id==="add-seg") state.draft.seg=e.target.value; });
+document.addEventListener("submit",async e=>{
+  if(e.target.id==="add-form"){ e.preventDefault(); addComment(); }
+  if(e.target.id==="pen-form"){ e.preventDefault(); const n=$("pen-in").value.trim(), m=$("pen-msg"); const pr=penProblem(n); if(pr){m.textContent=pr;return;}
+    m.textContent="שומר…"; try{ await savePen(n); editingPen=false; render(); }catch(err){ handleWriteError(err,m); } }
+});
+document.addEventListener("click",e=>{
+  const l=e.target.closest(".like"); if(l){e.preventDefault();toggleLike(l.dataset.id,l);return;}
+  const dl=e.target.closest(".del"); if(dl){e.preventDefault(); if(dl.dataset.armed){deleteComment(dl.dataset.id);} else {dl.dataset.armed="1"; dl.textContent="למחוק? לחצו שוב";} return;}
+  const cx=e.target.closest(".ctx"); if(cx){const pi=SEGPARA[cx.dataset.s];setIssue(SEGISSUE[cx.dataset.s],false);state.mode="para";state.para=pi;openIds.clear();render();document.querySelector(`section[data-p="${pi}"]`)?.scrollIntoView({block:"start"});return;}
+  if(e.target.closest(".close")){state.para=null;render();return;}
+  if(e.target.id==="pen-edit"){ editingPen=true; renderStatus(); $("pen-in")&&$("pen-in").focus(); return; }
+  if(e.target.id==="pen-cancel"){ editingPen=false; renderStatus(); return; }
+  if(e.target.closest("#add-form")||e.target.closest("#pen-form")) return;
+  const pa=e.target.closest(".para"); if(pa){openPara(+pa.dataset.p);return;}
+  const ib=e.target.closest(".ibtn"); if(ib){ setIssue(ib.dataset.i,true); render(); window.scrollTo({top:0}); return; }
+  const ch=e.target.closest(".chip"); if(ch){state.person=ch.dataset.p;openIds.clear();render();return;}
+  if(e.target.id==="m-seg"){state.mode="para";state.para=null;render();}
+  if(e.target.id==="m-person"){state.mode="person";openIds.clear();render();window.scrollTo({top:0});}
+});
+document.addEventListener("keydown",e=>{const pa=e.target.closest&&e.target.closest(".para"); if(pa&&(e.key==="Enter"||e.key===" ")){e.preventDefault();openPara(+pa.dataset.p);}});
+
+/* ---------- issues ---------- */
+function setIssue(id,resetPara){ if(!ISSUE_BY_ID[id]) return; state.issue=id; ESSAY=ISSUE_BY_ID[id].essay; if(resetPara){state.para=null; openIds.clear();} state.draft={seg:"",dh:"",text:"",link:"",pen:state.draft.pen||""}; try{ history.replaceState(null,"","#"+id); }catch(e){} }
+try{ const h=(location.hash||"").slice(1); if(ISSUE_BY_ID[h]) setIssue(h,true); }catch(e){}
+/* ---------- guided tour ---------- */
+const TOUR=[
+ {t:"ברוכים הבאים לתורה שבענן",b:"זה דף גמרא דיגיטלי סביב העלון ״פרשת השבוע למהנדסים״. העלון במרכז, וסביבו שלושה רבדים: באר הפוטנציאל (המדע), המקורות, ומפרשי הקהילה, כלומר אתם. ההדרכה לוקחת דקה."},
+ {sel:"#issues",t:"בחירת עלון",b:"כאן עוברים בין העלונים. הדף נפתח תמיד על העלון האחרון, וכל עלון שומר את הפירושים שלו."},
+ {sel:".modes",t:"שתי דרכים לקרוא",b:"״לפי פסקה״: העלון עצמו, וכל פסקה נפתחת עם מה שנכתב עליה. ״לפי מפרש״: כל מה שמפרש אחד כתב, ברצף, מכל העלונים, עם ניקוד ה-👍 שלו."},
+ {sel:"#status",t:"השם שלכם כמפרשים",b:"כאן מופיע השם שבו אתם כותבים. בוחרים אותו לפני הפירוש הראשון, ואפשר לשנות אותו בכל רגע. השינוי חל גם על כל מה שכבר כתבתם. אם כתוב ״מצב קריאה בלבד״, צריך הזמנה מאביב.",when:()=>!$("status").hidden},
+ {sel:'.para[data-p="0"]',t:"לחצו על פסקה",b:"האותיות והמספרים הקטנים הם סימני ההערות, כמו בעלון המודפס: אות היא מקור, ומספר הוא הערה של באר הפוטנציאל. מתחת לכל פסקה כתוב כמה פירושים יש עליה.",pre:()=>{ if(state.mode!=="para"){state.mode="para";} state.para=null; render(); }},
+ {sel:"#panel",t:"כל מה שנכתב על הפסקה",b:"הפירושים מסודרים בשלוש קבוצות. לחיצה על שורה פותחת אותה במלואה: ההסבר המדעי, הטקסט המלא של המקור עם קישור לספריא, או פירוש של משתתף. לחיצה נוספת על הפסקה סוגרת.",pre:()=>{ state.mode="para"; const bn=C.find(c=>c.kind==="beer"&&c.s.some(x=>SEGISSUE[x]===state.issue)); const pi=bn?SEGPARA[bn.s.find(x=>SEGISSUE[x]===state.issue)]:0; state.para=pi; openIds.clear(); if(bn) openIds.add(bn.id); render(); }},
+ {sel:"#panel .add",t:"הוסיפו פירוש משלכם",b:"בוחרים אם הפירוש על כל הפסקה או על משפט מסוים, מוסיפים כותרת קצרה, כותבים, ואפשר לצרף קישור, תמונה או PDF. הפירוש מופיע מיד אצל כולם.",pre:()=>{ if(state.para==null){state.mode="para";state.para=0;render();} }},
+ {sel:"#panel details[open] .like",t:"👍 על פירוש טוב",b:"כל אחד יכול לסמן 👍 פעם אחת על כל פירוש. הפירושים האהובים עולים לראש הרשימה, ובהמשך ייכנסו לעלון המודפס ולספר.",when:()=>!!document.querySelector("#panel details[open] .like")},
+ {sel:"#theme-btn",t:"מצב יום ולילה",b:"כפתור זה מחליף בין רקע בהיר לכהה."},
+ {sel:"#tour-btn",t:"זהו, אפשר להתחיל",b:"אפשר לחזור להדרכה בכל רגע מהכפתור הזה. לימוד נעים!",last:true},
+];
+let tourI=-1, tourSteps=[];
+function tourOpen(){ tourSteps=TOUR; tourI=-1; $("tour").hidden=false; document.body.classList.add("touring"); tourGo(1); }
+function tourClose(){ $("tour").hidden=true; document.body.classList.remove("touring"); tourI=-1; try{localStorage.setItem("tb-tour","done");}catch(e){} }
+function tourGo(dir){
+  let i=tourI+dir;
+  while(i>=0&&i<tourSteps.length){ const s=tourSteps[i]; if(s.pre) s.pre(); if((!s.when||s.when())&&(!s.sel||document.querySelector(s.sel))) break; i+=dir; }
+  if(i<0||i>=tourSteps.length){ tourClose(); return; }
+  tourI=i; const s=tourSteps[i];
+  $("tour-n").textContent=`${i+1} מתוך ${tourSteps.length}`; $("tour-t").textContent=s.t; $("tour-b").textContent=s.b;
+  $("tour-prev").hidden=i===0; $("tour-next").textContent=(i===tourSteps.length-1)?"סיום":"הבא";
+  const el=s.sel?document.querySelector(s.sel):null;
+  if(el){ el.scrollIntoView({block:"center",behavior:"auto"}); }
+  requestAnimationFrame(()=>tourPlace(el));
+  $("tour-next").focus();
+}
+function tourPlace(el){
+  const spot=$("tour-spot"), card=$("tour-card");
+  card.style.top=""; card.style.bottom="";
+  if(!el){ spot.style.cssText="display:none"; card.classList.add("center"); return; }
+  card.classList.remove("center");
+  const r=el.getBoundingClientRect(), pad=6, vh=window.innerHeight;
+  const top=Math.max(4,r.top-pad), h=Math.min(r.height+pad*2, vh-8-top);
+  spot.style.cssText=`display:block;top:${top}px;left:${Math.max(4,r.left-pad)}px;width:${Math.min(r.width+pad*2,window.innerWidth-8)}px;height:${Math.max(24,h)}px`;
+  const below=vh-(top+h), above=top;
+  if(below>=above){ card.style.top=Math.min(top+h+10, vh-card.offsetHeight-8)+"px"; } else { card.style.top=Math.max(8, top-card.offsetHeight-10)+"px"; }
+}
+$("tour-btn").addEventListener("click",tourOpen);
+$("tour-next").addEventListener("click",()=>tourGo(1));
+$("tour-prev").addEventListener("click",()=>tourGo(-1));
+$("tour-skip").addEventListener("click",tourClose);
+document.addEventListener("keydown",e=>{ if($("tour").hidden) return; if(e.key==="Escape") tourClose(); if(e.key==="ArrowLeft") tourGo(1); if(e.key==="ArrowRight") tourGo(-1); });
+window.addEventListener("resize",()=>{ if(!$("tour").hidden&&tourI>=0){ const s=tourSteps[tourI]; tourPlace(s.sel?document.querySelector(s.sel):null);} });
+/* ---------- accessibility ---------- */
+const FS=[1,1.15,1.3,1.5,1.75];
+let A11Y={fs:0,spacing:false,contrast:false,font:false,links:false,motion:false};
+try{ const s=JSON.parse(localStorage.getItem("tb-a11y")||"null"); if(s&&typeof s==="object") A11Y=Object.assign(A11Y,s); }catch(e){}
+function applyA11y(){
+  A11Y.fs=Math.max(0,Math.min(FS.length-1,A11Y.fs|0));
+  const w=document.querySelector(".wrap"); w.style.zoom=FS[A11Y.fs]===1?"":String(FS[A11Y.fs]);
+  const r=document.documentElement.classList;
+  r.toggle("a-spacing",!!A11Y.spacing); r.toggle("a-contrast",!!A11Y.contrast); r.toggle("a-font",!!A11Y.font); r.toggle("a-links",!!A11Y.links); r.toggle("a-motion",!!A11Y.motion);
+  $("fs-val").textContent=Math.round(FS[A11Y.fs]*100)+"%"; $("fs-dn").disabled=A11Y.fs===0; $("fs-up").disabled=A11Y.fs===FS.length-1;
+  ["spacing","contrast","font","links","motion"].forEach(k=>$("a-"+k).checked=!!A11Y[k]);
+  const on=A11Y.fs>0||A11Y.spacing||A11Y.contrast||A11Y.font||A11Y.links||A11Y.motion; $("a11y-btn").classList.toggle("on",on);
+  try{ localStorage.setItem("tb-a11y",JSON.stringify(A11Y)); }catch(e){}
+}
+function a11yToggle(show){ const p=$("a11y"); const open=show==null?p.hidden:show; p.hidden=!open; $("a11y-btn").setAttribute("aria-expanded",open); if(open) $("fs-up").focus(); }
+$("a11y-btn").addEventListener("click",()=>a11yToggle());
+$("a11y-close").addEventListener("click",()=>{a11yToggle(false);$("a11y-btn").focus();});
+$("fs-up").addEventListener("click",()=>{A11Y.fs++;applyA11y();});
+$("fs-dn").addEventListener("click",()=>{A11Y.fs--;applyA11y();});
+["spacing","contrast","font","links","motion"].forEach(k=>$("a-"+k).addEventListener("change",e=>{A11Y[k]=e.target.checked;applyA11y();}));
+$("a11y-reset").addEventListener("click",()=>{A11Y={fs:0,spacing:false,contrast:false,font:false,links:false,motion:false};applyA11y();});
+document.addEventListener("keydown",e=>{ if(e.key==="Escape"&&!$("a11y").hidden){a11yToggle(false);$("a11y-btn").focus();} });
+document.addEventListener("click",e=>{ if(!$("a11y").hidden&&!e.target.closest("#a11y")&&!e.target.closest("#a11y-btn")) a11yToggle(false); });
+applyA11y();
+/* ---------- day / night ---------- */
+function sysDark(){ return matchMedia("(prefers-color-scheme: dark)").matches; }
+function curTheme(){ const a=document.documentElement.getAttribute("data-theme"); return a||(sysDark()?"dark":"light"); }
+function paintThemeBtn(){ const dark=curTheme()==="dark"; const b=$("theme-btn"); b.textContent=dark?"☀️":"🌙"; b.setAttribute("aria-label",dark?"מעבר למצב יום":"מעבר למצב לילה"); }
+try{ const saved=localStorage.getItem("tb-theme"); if(saved==="dark"||saved==="light") document.documentElement.setAttribute("data-theme",saved); }catch(e){}
+paintThemeBtn();
+$("theme-btn").addEventListener("click",()=>{ const next=curTheme()==="dark"?"light":"dark"; document.documentElement.setAttribute("data-theme",next); try{localStorage.setItem("tb-theme",next);}catch(e){} paintThemeBtn(); });
+try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",paintThemeBtn); }catch(e){}
+
+render();
+try{ if(localStorage.getItem("tb-tour")!=="done") setTimeout(()=>{ if($("tour").hidden) tourOpen(); },900); }catch(e){}
+
+/* ---------- connect to shared data ---------- */
+async function refreshNames(){
+  if(!user) return;
+  const ids=[...new Set([...Object.keys(commDocs)])];
+  if(!ids.length) return;
+  try{ const ps=await user.profiles(ids); let changed=false; for(const id of ids){ const n=(ps[id]&&ps[id].name)||""; if(names[id]!==n){names[id]=n;changed=true;} } if(changed) liveRender(); }catch(e){}
+}
+(async()=>{
+  try{
+    user=window.claude?await window.claude.use("user"):null;
+    db=window.claude?await window.claude.use("db"):null;
+    assets=window.claude?await window.claude.use("assets"):null;
+  }catch(e){ db=null; }
+  if(user){ try{ const m=await user.me(); me={id:m.id,isOwner:!!m.isOwner}; }catch(e){} }
+  if(!db){ readOnlyReason="nodb"; render(); return; }
+  if(!me.id){ readOnlyReason="noid"; } else { writable=true; readOnlyReason=""; }
+  render();
+  db.collection("comments").onSnapshot(snap=>{
+    const next={}; snap.docs.forEach(d=>{ const v=d.data(); if(v&&v.items&&typeof v.items==="object") next[d.id]=v.items; });
+    commDocs=next; liveRender(); refreshNames();
+  },err=>{ if(err&&err.code==="revoked"){ writable=false; readOnlyReason="denied"; render(); } });
+  db.collection("penNames").onSnapshot(snap=>{
+    const next={}; snap.docs.forEach(d=>{ const v=d.data(); if(v&&typeof v.name==="string"&&v.name.trim()) next[d.id]=v.name.trim().slice(0,30); });
+    pens=next; liveRender();
+  },()=>{});
+  db.collection("likes").onSnapshot(snap=>{
+    const next={}; snap.docs.forEach(d=>{ const v=d.data(); if(v&&v.items&&typeof v.items==="object") next[d.id]=v.items; });
+    likeDocs=next; liveRender();
+  },()=>{});
+})();
+</script>
+
+</body></html>

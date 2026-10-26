@@ -52,6 +52,7 @@ Oct 25, 2026 · @Aviv
 | profiles | user\_id, pen\_name (ייחודי), is\_admin, created\_at | כולם | כל אחד את השורה שלו; is\_admin רק אביב |
 | comments | id, user\_id, issue\_id, seg\_ids, whole, title, body, link, file\_path, file\_type, file\_name, hidden, created\_at | כולם (חוץ ממוסתרים) | יצירה ומחיקה של שלך; מנהל מסתיר ומוחק הכול |
 | likes | user\_id, target\_id, created\_at (מפתח על שניהם) | כולם | כל אחד רק את שלו |
+| locks | id (המשפט הראשון בפסקה), issue_id, seg_ids, reason, locked_by | כולם | רק מנהל |
 | תיקיית attachments | קבצים בנתיב user\_id/… | כולם | כל אחד לתיקייה שלו |
 
 כמה כללים שכדאי להגדיר מההתחלה:

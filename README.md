@@ -4,7 +4,18 @@
 
 **Live:** [torah-beanan.vercel.app](https://torah-beanan.vercel.app) · Built by **Aviv Bryger · אביב בריגר**, with code written by [Claude Code](https://claude.com/claude-code)
 
-<!-- screenshots: docs/screenshot-desktop.png, docs/screenshot-phone.png -->
+![The Lech Lecha leaflet: issue picker, sign-in bar with pen name, and the essay with source marks](docs/leaflet.png)
+
+<table>
+<tr>
+<td width="52%"><img src="docs/paragraph.png" alt="An open paragraph: its source, the sentence it refers to, and the full text linked to Sefaria"></td>
+<td width="48%"><img src="docs/comment-form.png" alt="Adding a comment: on the whole paragraph or one sentence, with a title, a link, and an image or PDF"></td>
+</tr>
+<tr>
+<td>Tap a paragraph: its sources and notes open in place, with the full text and a Sefaria link.</td>
+<td>Anyone signed in can add a comment on the paragraph or a single sentence, with a link or file.</td>
+</tr>
+</table>
 
 ## The idea
 

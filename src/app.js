@@ -17,7 +17,7 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 
 let state={issue:ISSUES[ISSUES.length-1].id,mode:"para",para:null,person:"באר הפוטנציאל",draft:{seg:"",dh:"",text:""}};
-let assets=null,me={id:null,isOwner:false},writable=false,readOnlyReason="loading"; /* assets: file attachments arrive in stage 4 */
+let me={id:null,isOwner:false},writable=false,readOnlyReason="loading";
 let authReady=false;
 let comms={}, likeDocs={}, names={}, pens={}; let editingPen=false; /* comms: comment id -> item; likeDocs: user id -> {target id: true} */
 let openIds=new Set();
@@ -25,7 +25,15 @@ let openIds=new Set();
 /* ---------- derived data ---------- */
 function rowToComment(r){
   const s=(Array.isArray(r.seg_ids)?r.seg_ids:[]).filter(x=>x in SEGS);
-  return {id:r.id,uid:r.user_id,kind:"comm",who:r.user_id,s,whole:!!r.whole,dh:String(r.title||""),t:String(r.body||""),at:String(r.created_at||""),link:safeUrl(String(r.link||"")),att:null};
+  return {id:r.id,uid:r.user_id,kind:"comm",who:r.user_id,s,whole:!!r.whole,dh:String(r.title||""),t:String(r.body||""),at:String(r.created_at||""),link:safeUrl(String(r.link||"")),att:rowToAtt(r)};
+}
+/* attachments live in the public "attachments" bucket under <user_id>/<random>.<ext> */
+const BUCKET="attachments";
+const FILE_TYPES=/^(image\/(png|jpeg|gif|webp)|application\/pdf)$/;
+function rowToAtt(r){
+  const path=String(r.file_path||""), type=String(r.file_type||"");
+  if(!/^[0-9a-f-]{36}\/[A-Za-z0-9._-]{1,80}$/.test(path)||!FILE_TYPES.test(type)) return null;
+  return {path,type,name:String(r.file_name||"קובץ"),url:sb.storage.from(BUCKET).getPublicUrl(path).data.publicUrl};
 }
 function community(){ return Object.values(comms).filter(c=>c.s.length); }
 function safeUrl(u){ try{ const x=new URL(u); return (x.protocol==="https:"||x.protocol==="http:")?x.href:""; }catch(e){ return ""; } }
@@ -52,7 +60,7 @@ function body(c){
   const when=c.at?new Date(c.at).toLocaleDateString("he-IL",{day:"numeric",month:"short"}):"";
   const canDel=writable&&(c.uid===me.id||me.isOwner);
   let extra="";
-  if(c.att){ const src="/_blob/"+c.att.id;
+  if(c.att){ const src=esc(c.att.url);
     extra+= c.att.type.startsWith("image/")
       ? `<a class="attimg" href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${esc(c.att.name)}" loading="lazy"></a>`
       : `<a class="attfile" href="${src}" target="_blank" rel="noopener">📄 ${esc(c.att.name)}</a>`; }
@@ -82,8 +90,8 @@ function addForm(pi){
     <textarea id="add-text" rows="4" maxlength="4000" placeholder="מה הפסקה מעוררת אצלך? הערה, קושיה, מקור נוסף או תיקון.">${esc(d.text)}</textarea>
     <label class="fl" for="add-link">מקור נוסף: קישור (לא חובה)</label>
     <input id="add-link" type="url" inputmode="url" dir="ltr" value="${esc(d.link||"")}" placeholder="https://www.sefaria.org/…">
-    ${assets?`<label class="fl" for="add-file">מקור נוסף: תמונה או PDF (לא חובה, עד 20MB)</label>
-    <input id="add-file" type="file" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf">`:""}
+    <label class="fl" for="add-file">מקור נוסף: תמונה או PDF (לא חובה, עד 20MB)</label>
+    <input id="add-file" type="file" accept="image/png,image/jpeg,image/gif,image/webp,application/pdf">
     <div class="addrow"><span class="mini" id="add-msg" aria-live="polite"></span><button type="submit" class="pub" id="add-btn">פרסום</button></div>
   </form>`;
 }
@@ -198,7 +206,7 @@ async function selectAll(table,cols){
     out.push(...data); if(data.length<1000) return out;
   }
 }
-const COMMENT_COLS="id,user_id,issue_id,seg_ids,whole,title,body,link,hidden,created_at";
+const COMMENT_COLS="id,user_id,issue_id,seg_ids,whole,title,body,link,file_path,file_type,file_name,hidden,created_at";
 function putComment(r){ if(r.hidden&&!me.isOwner) delete comms[r.id]; else comms[r.id]=rowToComment(r); }
 function setLike(uid,target,on){ const m=likeDocs[uid]||(likeDocs[uid]={}); if(on) m[target]=true; else delete m[target]; }
 async function loadAll(){
@@ -234,18 +242,29 @@ async function addComment(){
   const msg=$("add-msg"), btn=$("add-btn");
   const text=$("add-text").value.trim(), dh=$("add-dh").value.trim(), seg=$("add-seg").value;
   const rawLink=$("add-link").value.trim(), link=rawLink?safeUrl(rawLink):"";
+  const fileIn=$("add-file"), file=fileIn&&fileIn.files&&fileIn.files[0];
   if(rawLink&&!link){ msg.textContent="הקישור צריך להתחיל ב-https://"; $("add-link").focus(); return; }
-  if(!text&&!link){ msg.textContent="כתבו פירוש, או צרפו קישור."; $("add-text").focus(); return; }
+  if(!text&&!link&&!file){ msg.textContent="כתבו פירוש, או צרפו קישור או קובץ."; $("add-text").focus(); return; }
+  if(file&&file.size>20*1024*1024){ msg.textContent="הקובץ גדול מ-20MB."; return; }
+  if(file&&!FILE_TYPES.test(file.type)){ msg.textContent="אפשר לצרף תמונה (PNG, JPG, GIF, WEBP) או PDF."; return; }
   const penIn=$("add-pen");
   if(penIn){ const n=penIn.value.trim(); const pr=penProblem(n); if(pr){ msg.textContent=pr; penIn.focus(); return; }
     try{ await savePen(n); }catch(err){ msg.textContent=penSaveError(err); return; } }
   const pi=state.para; const sid=seg||ESSAY[pi].segs[0][0];
-  btn.disabled=true; msg.textContent="שומר…";
+  btn.disabled=true; msg.textContent=file?"מעלה את הקובץ…":"שומר…";
+  let path=null;
+  if(file){
+    path=me.id+"/"+crypto.randomUUID()+"."+({"image/png":"png","image/jpeg":"jpg","image/gif":"gif","image/webp":"webp","application/pdf":"pdf"})[file.type];
+    const {error}=await sb.storage.from(BUCKET).upload(path,file,{contentType:file.type});
+    if(error){ btn.disabled=false; msg.textContent="העלאת הקובץ נכשלה. נסו שוב."; return; }
+    msg.textContent="שומר…";
+  }
   try{
     const {data,error}=await sb.from("comments")
-      .insert({issue_id:state.issue,seg_ids:[sid],whole:!seg,title:dh||null,body:text||null,link:link||null})
+      .insert({issue_id:state.issue,seg_ids:[sid],whole:!seg,title:dh||null,body:text||null,link:link||null,
+        file_path:path,file_type:file?file.type:null,file_name:file?file.name.slice(0,120):null})
       .select(COMMENT_COLS).single();
-    if(error) throw error;
+    if(error){ if(path) sb.storage.from(BUCKET).remove([path]); throw error; }
     putComment(data); openIds.add(data.id);
     state.draft={seg:"",dh:"",text:"",link:"",pen:""}; document.activeElement&&document.activeElement.blur&&document.activeElement.blur(); pending=false; render();
     const m=$("add-msg"); if(m) m.textContent="הפירוש פורסם.";
@@ -253,8 +272,11 @@ async function addComment(){
 }
 async function deleteComment(id){
   try{
+    const att=comms[id]&&comms[id].att;
     const {error}=await sb.from("comments").delete().eq("id",id);
     if(error) throw error;
+    /* the row goes first, so a refused delete never removes the file; a failed file removal only leaves an orphan */
+    if(att) sb.storage.from(BUCKET).remove([att.path]);
     delete comms[id]; openIds.delete(id); render();
   }catch(err){ handleWriteError(err,null); }
 }

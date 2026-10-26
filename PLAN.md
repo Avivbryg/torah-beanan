@@ -106,7 +106,7 @@ Oct 25, 2026 · @Aviv
 - [x] לפצל את הדף הקיים ל-index.html, styles.css ו-app.js בפרויקט Vite
 - [x] לטעון את העלונים מ-data/issues במקום מהקוד
 - [x] תיקון תצוגה בטלפון
-- [ ] git init, commit ראשון ומאגר ב-GitHub
+- [x] git init, commit ראשון ומאגר ב-GitHub
 - [ ] להעלות ל-Vercel. בסוף השלב: אתר ציבורי לקריאה בלבד
 
 **שלב 2: כניסה ושם מפרש (ערב אחד)**

@@ -20,13 +20,15 @@ let state={issue:ISSUES[ISSUES.length-1].id,mode:"para",para:null,person:"באר
 let me={id:null,isOwner:false},writable=false,readOnlyReason="loading";
 let authReady=false;
 let comms={}, likeDocs={}, names={}, pens={}; let editingPen=false; /* comms: comment id -> item; likeDocs: user id -> {target id: true} */
+let locks={}, lockingPara=null; /* locks: paragraph's first segment id -> {id,issue_id,seg_ids,reason} */
 let openIds=new Set();
 
 /* ---------- derived data ---------- */
 function rowToComment(r){
   const s=(Array.isArray(r.seg_ids)?r.seg_ids:[]).filter(x=>x in SEGS);
-  return {id:r.id,uid:r.user_id,kind:"comm",who:r.user_id,s,whole:!!r.whole,dh:String(r.title||""),t:String(r.body||""),at:String(r.created_at||""),link:safeUrl(String(r.link||"")),att:rowToAtt(r)};
+  return {id:r.id,uid:r.user_id,kind:"comm",who:r.user_id,s,whole:!!r.whole,hidden:!!r.hidden,dh:String(r.title||""),t:String(r.body||""),at:String(r.created_at||""),link:safeUrl(String(r.link||"")),att:rowToAtt(r)};
 }
+const lockOf=pi=>locks[ESSAY[pi].segs[0][0]]||null;
 /* attachments live in the public "attachments" bucket under <user_id>/<random>.<ext> */
 const BUCKET="attachments";
 const FILE_TYPES=/^(image\/(png|jpeg|gif|webp)|application\/pdf)$/;
@@ -52,7 +54,7 @@ function likeBtn(c){
 function head(c){
   if(c.kind==="beer") return `<span class="mark">${c.mark||"✦"}</span><span class="ttl">${esc(c.dh)}</span>`;
   if(c.kind==="trad") return `<span class="mark">${c.mark}</span><span class="ref">${esc(c.t)}</span>`;
-  return `<span class="mark">💬</span><span class="ttl">${esc(whoName(c.who))}</span><span class="dhs">${c.att||c.link?(c.att&&c.att.type.startsWith("image/")?"🖼 ":c.att?"📄 ":"🔗 "):""}${esc(c.dh||(c.t?c.t.slice(0,48)+(c.t.length>48?"…":""):(c.att?c.att.name:"קישור")))}</span><span class="lc">👍 ${likes(c)}</span>`;
+  return `<span class="mark">💬</span><span class="ttl">${esc(whoName(c.who))}</span>${c.hidden?`<span class="hidtag">מוסתר</span>`:""}<span class="dhs">${c.att||c.link?(c.att&&c.att.type.startsWith("image/")?"🖼 ":c.att?"📄 ":"🔗 "):""}${esc(c.dh||(c.t?c.t.slice(0,48)+(c.t.length>48?"…":""):(c.att?c.att.name:"קישור")))}</span><span class="lc">👍 ${likes(c)}</span>`;
 }
 function body(c){
   if(c.kind==="beer") return `<div class="body">${c.body.map(p=>`<p>${p}</p>`).join("")}${c.intext?`<div class="intext"><b>ובטקסט:</b> ${esc(c.intext)}</div>`:""}</div><div class="foot"><span></span>${likeBtn(c)}</div>`;
@@ -65,7 +67,7 @@ function body(c){
       ? `<a class="attimg" href="${src}" target="_blank" rel="noopener"><img src="${src}" alt="${esc(c.att.name)}" loading="lazy"></a>`
       : `<a class="attfile" href="${src}" target="_blank" rel="noopener">📄 ${esc(c.att.name)}</a>`; }
   if(c.link){ let host=""; try{host=new URL(c.link).hostname.replace(/^www\./,"");}catch(e){} extra+=`<a class="attlink" href="${esc(c.link)}" target="_blank" rel="noopener">🔗 ${esc(host||c.link)}</a>`; }
-  return `${c.dh?`<div class="dh">${esc(c.dh)}</div>`:""}${c.t?`<div class="body ctext">${esc(c.t)}</div>`:""}${extra}<div class="foot"><span class="mini">${esc(whoName(c.who))}${when?" · "+when:""}${canDel?` · <button class="del" data-id="${esc(c.id)}">מחיקה</button>`:""}</span>${likeBtn(c)}</div>`;
+  return `${c.dh?`<div class="dh">${esc(c.dh)}</div>`:""}${c.t?`<div class="body ctext">${esc(c.t)}</div>`:""}${extra}<div class="foot"><span class="mini">${esc(whoName(c.who))}${when?" · "+when:""}${canDel?` · <button class="del" data-id="${esc(c.id)}">מחיקה</button>`:""}${writable&&me.isOwner?` · <button class="del hide" data-id="${esc(c.id)}" data-h="${c.hidden?0:1}">${c.hidden?"ביטול הסתרה":"הסתרה"}</button>`:""}</span>${likeBtn(c)}</div>`;
 }
 function item(c,pi){
   const sid=firstSeg(c,pi);
@@ -73,7 +75,7 @@ function item(c,pi){
   const plead=is.essay[SEGPARA[sid]].lead||is.essay[SEGPARA[sid]].segs[0][1].slice(0,60)+"…";
   const ctx=c.whole?`<button class="ctx" data-s="${sid}">${tag}<span class="mini">על כל הפסקה</span> ${esc(plead)}</button>`:`<button class="ctx" data-s="${sid}">${tag}<span class="mini">על המשפט</span> ${esc(SEGS[sid])}</button>`;
   const open=openIds.has(c.id)?" open":"";
-  return `<details class="it ${c.kind}" data-id="${esc(c.id)}"${open}><summary>${head(c)}<span class="chev" aria-hidden="true"></span></summary><div class="in">${ctx}${body(c)}</div></details>`;
+  return `<details class="it ${c.kind}${c.hidden?" hid":""}" data-id="${esc(c.id)}"${open}><summary>${head(c)}<span class="chev" aria-hidden="true"></span></summary><div class="in">${ctx}${body(c)}</div></details>`;
 }
 function addForm(pi){
   if(!writable) return `<div class="add ro"><p class="mini">${readOnlyText()}</p></div>`;
@@ -95,6 +97,19 @@ function addForm(pi){
     <div class="addrow"><span class="mini" id="add-msg" aria-live="polite"></span><button type="submit" class="pub" id="add-btn">פרסום</button></div>
   </form>`;
 }
+/* the add form, or the lock notice; admins also get the lock controls */
+function discussion(pi){
+  const lk=lockOf(pi);
+  if(lk) return `<div class="lockbox"><b>🔒 הדיון על הפסקה נעול.</b> ${esc(lk.reason)}${writable&&me.isOwner?` · <button class="lnk" id="unlock" data-k="${esc(lk.id)}">פתיחת הדיון</button>`:""}</div>`;
+  if(!(writable&&me.isOwner)) return addForm(pi);
+  return addForm(pi)+(lockingPara===pi
+    ?`<form id="lock-form" class="add lockf" autocomplete="off" novalidate>
+      <label class="fl" for="lock-reason">נימוק לנעילת הדיון (יוצג לכולם במקום טופס ההוספה)</label>
+      <textarea id="lock-reason" rows="2" maxlength="300" placeholder="למשל: הדיון מיצה את עצמו. אפשר להמשיך בפסקה הבאה."></textarea>
+      <div class="addrow"><span class="mini" id="lock-msg" aria-live="polite"></span><span class="hctl"><button type="button" class="lnk" id="lock-cancel">ביטול</button><button type="submit" class="pub">נעילה</button></span></div>
+    </form>`
+    :`<button class="lnk lockopen" id="lock-open">🔒 נעילת הדיון על הפסקה</button>`);
+}
 function readOnlyText(){
   if(readOnlyReason==="loading") return "מתחבר…";
   return `כדי לכתוב פירוש צריך להיכנס · <button class="lnk login">כניסה עם גוגל</button>`;
@@ -110,7 +125,7 @@ function renderEssay(){
       return h+(marks.length?`<sup class="m">${marks.map(c=>`<span class="mk ${c.kind}">${c.mark}</span>`).join(" ")}</sup>`:"");
     }).join(" ");
     const cur=state.mode==="para"&&state.para===pi;
-    return `<section data-p="${pi}"><div class="para" role="button" tabindex="0" data-p="${pi}" aria-expanded="${cur}" aria-current="${cur}">${txt}<span class="pcount">${nb?`<span class="pc beer"><i></i>${nb} באר הפוטנציאל</span>`:""}${nt?`<span class="pc trad"><i></i>${nt} מקורות</span>`:""}<span class="pc comm"><i></i>${nc?nc+" מהקהילה":"הוסיפו פירוש"}</span></span></div></section>`;
+    return `<section data-p="${pi}"><div class="para" role="button" tabindex="0" data-p="${pi}" aria-expanded="${cur}" aria-current="${cur}">${txt}<span class="pcount">${nb?`<span class="pc beer"><i></i>${nb} באר הפוטנציאל</span>`:""}${nt?`<span class="pc trad"><i></i>${nt} מקורות</span>`:""}<span class="pc comm"><i></i>${nc?nc+" מהקהילה":(lockOf(pi)?"":"הוסיפו פירוש")}${lockOf(pi)?(nc?" · ":"")+"🔒 הדיון נעול":""}</span></span></div></section>`;
   }).join("");
 }
 function renderPanel(){
@@ -124,7 +139,7 @@ function renderPanel(){
     const groups=[["beer","באר הפוטנציאל",(a,b)=>pos(a)-pos(b)],["trad","מקורות",(a,b)=>pos(a)-pos(b)],["comm","מפרשי הקהילה",(a,b)=>likes(b)-likes(a)||(a.at<b.at?-1:1)]];
     p.innerHTML=`<div class="phead"><h2>${esc((ESSAY[pi].lead||ESSAY[pi].segs[0][1].slice(0,40)+"…").replace(/[.?:,]$/,""))}</h2><button class="close" aria-label="סגירה">✕</button></div><p class="mini hintline">לחצו על פירוש או מקור כדי לפתוח אותו במלואו.</p>`+
       groups.map(([k,label,sort])=>{const g=list.filter(c=>c.kind===k).sort(sort);
-        if(k==="comm") return `<section class="grp g-comm"><div class="group">${label}${g.length?` <span class="gc">${g.length}</span>`:""}</div>${g.length?g.map(c=>item(c,pi)).join(""):`<p class="empty">עדיין אין פירושים מהקהילה על הפסקה הזו. אפשר להיות הראשונים.</p>`}${addForm(pi)}</section>`;
+        if(k==="comm") return `<section class="grp g-comm"><div class="group">${label}${g.length?` <span class="gc">${g.length}</span>`:""}</div>${g.length?g.map(c=>item(c,pi)).join(""):`<p class="empty">עדיין אין פירושים מהקהילה על הפסקה הזו.${lockOf(pi)?"":" אפשר להיות הראשונים."}</p>`}${discussion(pi)}</section>`;
         return g.length?`<section class="grp g-${k}"><div class="group">${label} <span class="gc">${g.length}</span></div>`+g.map(c=>item(c,pi)).join("")+`</section>`:""}).join("");
     document.querySelector(`section[data-p="${pi}"]`).appendChild(p); p.classList.add("inline");
   }else{
@@ -149,7 +164,7 @@ function renderStatus(){
   st.hidden=false; st.className="status ok";
   if(editingPen){ st.innerHTML=`<form id="pen-form" class="penf" novalidate><label for="pen-in">שם המפרש שלך</label><input id="pen-in" maxlength="30" value="${esc(myPen())}" placeholder="למשל: בעל הלבנים"><button type="submit" class="pub sm">שמירה</button><button type="button" class="lnk" id="pen-cancel">ביטול</button><span class="mini" id="pen-msg" aria-live="polite"></span><span class="mini penhint">השינוי יחול גם על כל הפירושים שכבר כתבת.</span></form>`; }
   else { const p=myPen(); st.innerHTML= p?`כותב/ת בשם <b>${esc(p)}</b> · <button class="lnk" id="pen-edit">שינוי שם</button>`:`מחובר/ת. לפני הפירוש הראשון כדאי לבחור שם מפרש · <button class="lnk" id="pen-edit">בחירת שם</button>`;
-    st.innerHTML+=` · <button class="lnk" id="logout">יציאה</button>`; }
+    st.innerHTML+=`${me.isOwner?" · מנהל":""} · <button class="lnk" id="logout">יציאה</button>`; }
 }
 function render(){
   $("chips").hidden=state.mode!=="person";
@@ -166,8 +181,9 @@ function render(){
 }
 /* re-render from live data without clobbering a half-typed comment */
 let pending=false;
-function liveRender(){ const a=document.activeElement; if(a&&a.closest&&(a.closest("#add-form")||a.closest("#pen-form"))){pending=true;return;} pending=false; render(); }
-document.addEventListener("focusout",e=>{ if(pending&&e.target.closest&&e.target.closest("#add-form")) setTimeout(()=>{ if(!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest("#add-form"))) liveRender(); },0); });
+function liveRender(){ const a=document.activeElement; if(a&&a.closest&&(a.closest("#add-form")||a.closest("#pen-form")||a.closest("#lock-form"))){pending=true;return;} pending=false; render(); }
+const FORMS="#add-form,#lock-form";
+document.addEventListener("focusout",e=>{ if(pending&&e.target.closest&&e.target.closest(FORMS)) setTimeout(()=>{ if(!(document.activeElement&&document.activeElement.closest&&document.activeElement.closest(FORMS))) liveRender(); },0); });
 
 /* ---------- pen names ---------- */
 function penProblem(n){
@@ -209,17 +225,32 @@ async function selectAll(table,cols){
 const COMMENT_COLS="id,user_id,issue_id,seg_ids,whole,title,body,link,file_path,file_type,file_name,hidden,created_at";
 function putComment(r){ if(r.hidden&&!me.isOwner) delete comms[r.id]; else comms[r.id]=rowToComment(r); }
 function setLike(uid,target,on){ const m=likeDocs[uid]||(likeDocs[uid]={}); if(on) m[target]=true; else delete m[target]; }
+const LOCK_COLS="id,issue_id,seg_ids,reason";
 async function loadAll(){
   try{
-    const [cs,ls]=await Promise.all([selectAll("comments",COMMENT_COLS),selectAll("likes","user_id,target_id")]);
+    const [cs,ls,ks]=await Promise.all([selectAll("comments",COMMENT_COLS),selectAll("likes","user_id,target_id"),selectAll("locks",LOCK_COLS)]);
     comms={}; cs.forEach(putComment);
     likeDocs={}; ls.forEach(r=>setLike(r.user_id,r.target_id,true));
+    locks={}; ks.forEach(r=>locks[r.id]=r);
   }catch(e){ return; }
   liveRender();
 }
-sb.channel("live")
+/* Re-read one comment. Hiding removes it from what others may read, so Realtime never tells them;
+   the admin's browser broadcasts the id instead, and each browser asks the database itself. */
+async function recheckComment(id){
+  if(typeof id!=="string"||!/^[0-9a-f-]{36}$/.test(id)) return;
+  const {data,error}=await sb.from("comments").select(COMMENT_COLS).eq("id",id).maybeSingle();
+  if(error) return;
+  if(data) putComment(data); else { delete comms[id]; openIds.delete(id); }
+  liveRender();
+}
+const live=sb.channel("live")
+  .on("broadcast",{event:"recheck"},({payload})=>recheckComment(payload&&payload.id))
   .on("postgres_changes",{event:"*",schema:"public",table:"comments"},p=>{
     if(p.eventType==="DELETE"){ delete comms[p.old.id]; openIds.delete(p.old.id); } else putComment(p.new);
+    liveRender(); })
+  .on("postgres_changes",{event:"*",schema:"public",table:"locks"},p=>{
+    if(p.eventType==="DELETE") delete locks[p.old.id]; else locks[p.new.id]=p.new;
     liveRender(); })
   .on("postgres_changes",{event:"*",schema:"public",table:"likes"},p=>{
     if(p.eventType==="DELETE") setLike(p.old.user_id,p.old.target_id,false); else setLike(p.new.user_id,p.new.target_id,true);
@@ -280,6 +311,30 @@ async function deleteComment(id){
     delete comms[id]; openIds.delete(id); render();
   }catch(err){ handleWriteError(err,null); }
 }
+/* ---------- admin: hide comments, lock paragraphs ---------- */
+async function setHidden(id,hidden){
+  try{
+    const {data,error}=await sb.from("comments").update({hidden}).eq("id",id).select(COMMENT_COLS).single();
+    if(error) throw error;
+    putComment(data); render();
+    live.send({type:"broadcast",event:"recheck",payload:{id}});
+  }catch(err){ handleWriteError(err,null); }
+}
+async function lockPara(pi,reason,msg){
+  const segs=ESSAY[pi].segs.map(s=>s[0]);
+  try{
+    const {data,error}=await sb.from("locks").insert({id:segs[0],issue_id:state.issue,seg_ids:segs,reason}).select(LOCK_COLS).single();
+    if(error) throw error;
+    locks[data.id]=data; lockingPara=null; render();
+  }catch(err){ handleWriteError(err,msg); }
+}
+async function unlock(id){
+  try{
+    const {error}=await sb.from("locks").delete().eq("id",id);
+    if(error) throw error;
+    delete locks[id]; render();
+  }catch(err){ handleWriteError(err,null); }
+}
 async function toggleLike(id,btn){
   if(!writable) return;
   try{
@@ -297,7 +352,7 @@ async function toggleLike(id,btn){
 }
 
 /* ---------- events ---------- */
-function openPara(pi){ state.mode="para"; state.para=(state.para===pi)?null:pi; openIds.clear(); render(); }
+function openPara(pi){ state.mode="para"; state.para=(state.para===pi)?null:pi; lockingPara=null; openIds.clear(); render(); }
 document.addEventListener("toggle",e=>{const d=e.target; if(d.matches&&d.matches("details.it")){ d.open?openIds.add(d.dataset.id):openIds.delete(d.dataset.id);} },true);
 document.addEventListener("input",e=>{ const id=e.target.id; if(id==="add-text")state.draft.text=e.target.value; if(id==="add-dh")state.draft.dh=e.target.value; if(id==="add-seg")state.draft.seg=e.target.value; if(id==="add-link")state.draft.link=e.target.value; if(id==="add-pen")state.draft.pen=e.target.value; });
 document.addEventListener("change",e=>{ if(e.target.id==="add-seg") state.draft.seg=e.target.value; });
@@ -305,9 +360,16 @@ document.addEventListener("submit",async e=>{
   if(e.target.id==="add-form"){ e.preventDefault(); addComment(); }
   if(e.target.id==="pen-form"){ e.preventDefault(); const n=$("pen-in").value.trim(), m=$("pen-msg"); const pr=penProblem(n); if(pr){m.textContent=pr;return;}
     m.textContent="שומר…"; try{ await savePen(n); editingPen=false; render(); }catch(err){ m.textContent=penSaveError(err); } }
+  if(e.target.id==="lock-form"){ e.preventDefault(); const r=$("lock-reason").value.trim(), m=$("lock-msg");
+    if(r.length<2){ m.textContent="כתבו נימוק קצר, שיוצג לכולם."; $("lock-reason").focus(); return; }
+    m.textContent="נועל…"; lockPara(state.para,r,m); }
 });
 document.addEventListener("click",e=>{
   const l=e.target.closest(".like"); if(l){e.preventDefault();toggleLike(l.dataset.id,l);return;}
+  const hd=e.target.closest(".hide"); if(hd){e.preventDefault(); setHidden(hd.dataset.id,hd.dataset.h==="1"); return;}
+  if(e.target.id==="lock-open"){ lockingPara=state.para; render(); $("lock-reason")&&$("lock-reason").focus(); return; }
+  if(e.target.id==="lock-cancel"){ lockingPara=null; render(); return; }
+  if(e.target.id==="unlock"){ unlock(e.target.dataset.k); return; }
   const dl=e.target.closest(".del"); if(dl){e.preventDefault(); if(dl.dataset.armed){deleteComment(dl.dataset.id);} else {dl.dataset.armed="1"; dl.textContent="למחוק? לחצו שוב";} return;}
   const cx=e.target.closest(".ctx"); if(cx){const pi=SEGPARA[cx.dataset.s];setIssue(SEGISSUE[cx.dataset.s],false);state.mode="para";state.para=pi;openIds.clear();render();document.querySelector(`section[data-p="${pi}"]`)?.scrollIntoView({block:"start"});return;}
   if(e.target.closest(".close")){state.para=null;render();return;}
@@ -315,7 +377,7 @@ document.addEventListener("click",e=>{
   if(e.target.id==="pen-cancel"){ editingPen=false; renderStatus(); return; }
   if(e.target.closest(".login")){ signIn(); return; }
   if(e.target.id==="logout"){ sb.auth.signOut(); return; }
-  if(e.target.closest("#add-form")||e.target.closest("#pen-form")) return;
+  if(e.target.closest("#add-form")||e.target.closest("#pen-form")||e.target.closest("#lock-form")) return;
   const pa=e.target.closest(".para"); if(pa){openPara(+pa.dataset.p);return;}
   const ib=e.target.closest(".ibtn"); if(ib){ setIssue(ib.dataset.i,true); render(); window.scrollTo({top:0}); return; }
   const ch=e.target.closest(".chip"); if(ch){state.person=ch.dataset.p;openIds.clear();render();return;}

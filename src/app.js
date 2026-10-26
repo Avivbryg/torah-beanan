@@ -1,3 +1,5 @@
+import { sb } from "./supabase.js";
+
 /* Issues: every data/issues/*.json is bundled at build time, oldest first (by date). Adding a file adds an issue. */
 const ISSUES=Object.values(import.meta.glob("../data/issues/*.json",{eager:true,import:"default"}))
   .sort((a,b)=>String(a.date||"").localeCompare(String(b.date||"")));
@@ -15,7 +17,8 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 
 let state={issue:ISSUES[ISSUES.length-1].id,mode:"para",para:null,person:"באר הפוטנציאל",draft:{seg:"",dh:"",text:""}};
-let assets=null,db=null,user=null,me={id:null,isOwner:false},writable=false,readOnlyReason="soon"; /* step 1: read only, no backend yet */
+let assets=null,db=null,user=null,me={id:null,isOwner:false},writable=false,readOnlyReason="soon"; /* comments and likes arrive in stage 3 */
+let authReady=false;
 let commDocs={}, likeDocs={}, names={}, pens={}; let editingPen=false;
 let openIds=new Set();
 
@@ -140,12 +143,12 @@ function renderChips(){
 }
 function renderStatus(){
   const st=$("status");
-  if(writable){ st.hidden=false; st.className="status ok";
-    if(editingPen){ st.innerHTML=`<form id="pen-form" class="penf" novalidate><label for="pen-in">שם המפרש שלך</label><input id="pen-in" maxlength="30" value="${esc(myPen())}" placeholder="למשל: בעל הלבנים"><button type="submit" class="pub sm">שמירה</button><button type="button" class="lnk" id="pen-cancel">ביטול</button><span class="mini" id="pen-msg" aria-live="polite"></span><span class="mini penhint">השינוי יחול גם על כל הפירושים שכבר כתבת.</span></form>`; }
-    else { const p=myPen(); st.innerHTML= p?`כותב/ת בשם <b>${esc(p)}</b> · <button class="lnk" id="pen-edit">שינוי שם</button>`:`מחובר/ת. לפני הפירוש הראשון כדאי לבחור שם מפרש · <button class="lnk" id="pen-edit">בחירת שם</button>`; }
-  }
-  else if(readOnlyReason==="loading"||readOnlyReason==="soon"){ st.hidden=true; }
-  else { st.hidden=false; st.className="status ro"; st.textContent=readOnlyText(); }
+  if(!authReady){ st.hidden=true; return; }
+  if(!me.id){ st.hidden=false; st.className="status ro"; st.innerHTML=`כדי לכתוב פירושים ולסמן 👍 צריך להיכנס · <button class="lnk" id="login">כניסה עם גוגל</button>`; return; }
+  st.hidden=false; st.className="status ok";
+  if(editingPen){ st.innerHTML=`<form id="pen-form" class="penf" novalidate><label for="pen-in">שם המפרש שלך</label><input id="pen-in" maxlength="30" value="${esc(myPen())}" placeholder="למשל: בעל הלבנים"><button type="submit" class="pub sm">שמירה</button><button type="button" class="lnk" id="pen-cancel">ביטול</button><span class="mini" id="pen-msg" aria-live="polite"></span><span class="mini penhint">השינוי יחול גם על כל הפירושים שכבר כתבת.</span></form>`; }
+  else { const p=myPen(); st.innerHTML= p?`כותב/ת בשם <b>${esc(p)}</b> · <button class="lnk" id="pen-edit">שינוי שם</button>`:`מחובר/ת. לפני הפירוש הראשון כדאי לבחור שם מפרש · <button class="lnk" id="pen-edit">בחירת שם</button>`;
+    st.innerHTML+=` · <button class="lnk" id="logout">יציאה</button>`; }
 }
 function render(){
   $("chips").hidden=state.mode!=="person";
@@ -174,7 +177,23 @@ function penProblem(n){
   return "";
 }
 async function savePen(n){
-  await serial("p:"+me.id, async()=>{ await db.doc("penNames/"+me.id).set({name:n}); pens[me.id]=n; });
+  await serial("p:"+me.id, async()=>{
+    const {error}=await sb.from("profiles").update({pen_name:n}).eq("user_id",me.id);
+    if(error) throw error;
+    pens[me.id]=n;
+  });
+}
+/* Postgres error codes from the profiles table: 23505 unique name, 23514 check constraint */
+function penSaveError(err){
+  const code=err&&err.code;
+  if(code==="23505") return "מפרש אחר כבר בחר בשם הזה.";
+  if(code==="23514") return "השם צריך להכיל 2 עד 30 תווים, ולא להיות שם שמור.";
+  return "השמירה לא הצליחה. נסו שוב בעוד רגע.";
+}
+async function loadPens(){
+  const {data,error}=await sb.from("profiles").select("user_id,pen_name,is_admin");
+  if(error) return;
+  pens={}; for(const r of data){ if(r.pen_name) pens[r.user_id]=r.pen_name; if(r.user_id===me.id) me.isOwner=!!r.is_admin; }
 }
 /* ---------- writes (one at a time per document) ---------- */
 const chains={};
@@ -249,7 +268,7 @@ document.addEventListener("change",e=>{ if(e.target.id==="add-seg") state.draft.
 document.addEventListener("submit",async e=>{
   if(e.target.id==="add-form"){ e.preventDefault(); addComment(); }
   if(e.target.id==="pen-form"){ e.preventDefault(); const n=$("pen-in").value.trim(), m=$("pen-msg"); const pr=penProblem(n); if(pr){m.textContent=pr;return;}
-    m.textContent="שומר…"; try{ await savePen(n); editingPen=false; render(); }catch(err){ handleWriteError(err,m); } }
+    m.textContent="שומר…"; try{ await savePen(n); editingPen=false; render(); }catch(err){ m.textContent=penSaveError(err); } }
 });
 document.addEventListener("click",e=>{
   const l=e.target.closest(".like"); if(l){e.preventDefault();toggleLike(l.dataset.id,l);return;}
@@ -258,6 +277,8 @@ document.addEventListener("click",e=>{
   if(e.target.closest(".close")){state.para=null;render();return;}
   if(e.target.id==="pen-edit"){ editingPen=true; renderStatus(); $("pen-in")&&$("pen-in").focus(); return; }
   if(e.target.id==="pen-cancel"){ editingPen=false; renderStatus(); return; }
+  if(e.target.id==="login"){ signIn(); return; }
+  if(e.target.id==="logout"){ sb.auth.signOut(); return; }
   if(e.target.closest("#add-form")||e.target.closest("#pen-form")) return;
   const pa=e.target.closest(".para"); if(pa){openPara(+pa.dataset.p);return;}
   const ib=e.target.closest(".ibtn"); if(ib){ setIssue(ib.dataset.i,true); render(); window.scrollTo({top:0}); return; }
@@ -269,13 +290,13 @@ document.addEventListener("keydown",e=>{const pa=e.target.closest&&e.target.clos
 
 /* ---------- issues ---------- */
 function setIssue(id,resetPara){ if(!ISSUE_BY_ID[id]) return; state.issue=id; ESSAY=ISSUE_BY_ID[id].essay; if(resetPara){state.para=null; openIds.clear();} state.draft={seg:"",dh:"",text:"",link:"",pen:state.draft.pen||""}; try{ history.replaceState(null,"","#"+id); }catch(e){} }
-try{ const h=(location.hash||"").slice(1); if(ISSUE_BY_ID[h]) setIssue(h,true); }catch(e){}
+try{ const h=(location.hash||"").slice(1)||sessionStorage.getItem("tb-return"); sessionStorage.removeItem("tb-return"); if(ISSUE_BY_ID[h]) setIssue(h,true); }catch(e){}
 /* ---------- guided tour ---------- */
 const TOUR=[
  {t:"ברוכים הבאים לתורה שבענן",b:"זה דף גמרא דיגיטלי סביב העלון ״פרשת השבוע למהנדסים״. העלון במרכז, וסביבו שלושה רבדים: באר הפוטנציאל (המדע), המקורות, ומפרשי הקהילה, כלומר אתם. ההדרכה לוקחת דקה."},
  {sel:"#issues",t:"בחירת עלון",b:"כאן עוברים בין העלונים. הדף נפתח תמיד על העלון האחרון, וכל עלון שומר את הפירושים שלו."},
  {sel:".modes",t:"שתי דרכים לקרוא",b:"״לפי פסקה״: העלון עצמו, וכל פסקה נפתחת עם מה שנכתב עליה. ״לפי מפרש״: כל מה שמפרש אחד כתב, ברצף, מכל העלונים, עם ניקוד ה-👍 שלו."},
- {sel:"#status",t:"השם שלכם כמפרשים",b:"כאן מופיע השם שבו אתם כותבים. בוחרים אותו לפני הפירוש הראשון, ואפשר לשנות אותו בכל רגע. השינוי חל גם על כל מה שכבר כתבתם. אם כתוב ״מצב קריאה בלבד״, צריך להיכנס עם גוגל.",when:()=>!$("status").hidden},
+ {sel:"#status",t:"השם שלכם כמפרשים",b:"כאן מופיע השם שבו אתם כותבים. בוחרים אותו לפני הפירוש הראשון, ואפשר לשנות אותו בכל רגע. השינוי חל גם על כל מה שכבר כתבתם. כדי לכתוב, נכנסים כאן עם חשבון גוגל.",when:()=>!$("status").hidden},
  {sel:'.para[data-p="0"]',t:"לחצו על פסקה",b:"האותיות והמספרים הקטנים הם סימני ההערות, כמו בעלון המודפס: אות היא מקור, ומספר הוא הערה של באר הפוטנציאל. מתחת לכל פסקה כתוב כמה פירושים יש עליה.",pre:()=>{ if(state.mode!=="para"){state.mode="para";} state.para=null; render(); }},
  {sel:"#panel",t:"כל מה שנכתב על הפסקה",b:"הפירושים מסודרים בשלוש קבוצות. לחיצה על שורה פותחת אותה במלואה: ההסבר המדעי, הטקסט המלא של המקור עם קישור לספריא, או פירוש של משתתף. לחיצה נוספת על הפסקה סוגרת.",pre:()=>{ state.mode="para"; const bn=C.find(c=>c.kind==="beer"&&c.s.some(x=>SEGISSUE[x]===state.issue)); const pi=bn?SEGPARA[bn.s.find(x=>SEGISSUE[x]===state.issue)]:0; state.para=pi; openIds.clear(); if(bn) openIds.add(bn.id); render(); }},
  {sel:"#panel .add",t:"הוסיפו פירוש משלכם",b:"בוחרים אם הפירוש על כל הפסקה או על משפט מסוים, מוסיפים כותרת קצרה, כותבים, ואפשר לצרף קישור, תמונה או PDF. הפירוש מופיע מיד אצל כולם.",pre:()=>{ if(state.para==null){state.mode="para";state.para=0;render();} }},
@@ -350,3 +371,22 @@ try{ matchMedia("(prefers-color-scheme: dark)").addEventListener("change",paintT
 
 render();
 try{ if(localStorage.getItem("tb-tour")!=="done") setTimeout(()=>{ if($("tour").hidden) tourOpen(); },900); }catch(e){}
+
+/* ---------- sign-in (Supabase Auth, Google) ---------- */
+async function signIn(){
+  /* the return URL carries no hash, so remember the open issue across the Google round trip */
+  try{ sessionStorage.setItem("tb-return",state.issue); }catch(e){}
+  const {error}=await sb.auth.signInWithOAuth({provider:"google",options:{redirectTo:location.origin+location.pathname}});
+  if(error){ const st=$("status"); st.className="status ro"; st.textContent="הכניסה לא הצליחה. נסו שוב בעוד רגע."; }
+}
+async function applySession(session){
+  const id=session&&session.user?session.user.id:null;
+  if(id!==me.id){ me={id,isOwner:false}; editingPen=false; await loadPens(); }
+  authReady=true; liveRender();
+}
+sb.auth.onAuthStateChange((_event,session)=>{ setTimeout(()=>applySession(session),0); });
+sb.auth.getSession().then(({data})=>{
+  applySession(data.session);
+  /* drop ?code= left by the sign-in redirect */
+  if(location.search.includes("code=")) history.replaceState(null,"",location.pathname+location.hash);
+});

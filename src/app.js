@@ -17,21 +17,17 @@ const $=id=>document.getElementById(id);
 const esc=s=>String(s).replace(/[&<>"]/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[m]));
 
 let state={issue:ISSUES[ISSUES.length-1].id,mode:"para",para:null,person:"באר הפוטנציאל",draft:{seg:"",dh:"",text:""}};
-let assets=null,db=null,user=null,me={id:null,isOwner:false},writable=false,readOnlyReason="soon"; /* comments and likes arrive in stage 3 */
+let assets=null,me={id:null,isOwner:false},writable=false,readOnlyReason="loading"; /* assets: file attachments arrive in stage 4 */
 let authReady=false;
-let commDocs={}, likeDocs={}, names={}, pens={}; let editingPen=false;
+let comms={}, likeDocs={}, names={}, pens={}; let editingPen=false; /* comms: comment id -> item; likeDocs: user id -> {target id: true} */
 let openIds=new Set();
 
 /* ---------- derived data ---------- */
-function community(){
-  const out=[];
-  for(const [uid,items] of Object.entries(commDocs)) for(const [cid,o] of Object.entries(items||{})){
-    if(!o||(!String(o.text||"").trim()&&!o.link&&!o.att)) continue;
-    const s=(Array.isArray(o.s)?o.s:[]).filter(x=>x in SEGS); if(!s.length) continue;
-    out.push({id:"c:"+uid+":"+cid,cid,uid,kind:"comm",who:uid,s,whole:!!o.whole,dh:String(o.dh||""),t:String(o.text||""),at:String(o.at||""),link:safeUrl(String(o.link||"")),att:(o.att&&/^[A-Za-z0-9]{8,64}$/.test(String(o.att.id||"")))?{id:String(o.att.id),type:String(o.att.type||""),name:String(o.att.name||"קובץ")}:null});
-  }
-  return out;
+function rowToComment(r){
+  const s=(Array.isArray(r.seg_ids)?r.seg_ids:[]).filter(x=>x in SEGS);
+  return {id:r.id,uid:r.user_id,kind:"comm",who:r.user_id,s,whole:!!r.whole,dh:String(r.title||""),t:String(r.body||""),at:String(r.created_at||""),link:safeUrl(String(r.link||"")),att:null};
 }
+function community(){ return Object.values(comms).filter(c=>c.s.length); }
 function safeUrl(u){ try{ const x=new URL(u); return (x.protocol==="https:"||x.protocol==="http:")?x.href:""; }catch(e){ return ""; } }
 const ALL=()=>C.concat(community());
 const likes=c=>{let n=0;for(const k in likeDocs) if(likeDocs[k]&&likeDocs[k][c.id]) n++;return n;};
@@ -93,10 +89,7 @@ function addForm(pi){
 }
 function readOnlyText(){
   if(readOnlyReason==="loading") return "מתחבר…";
-  if(readOnlyReason==="soon") return "פירושי הקהילה וה-👍 יחזרו בקרוב, עם כניסה דרך גוגל.";
-  if(readOnlyReason==="nodb") return "מצב קריאה בלבד. כדי לכתוב פירושים ולסמן 👍 צריך להיכנס עם חשבון Claude שהוזמן לדף הזה.";
-  if(readOnlyReason==="noid") return "מצב קריאה בלבד. כדי לכתוב פירושים צריך להיות מחובר/ת לחשבון Claude.";
-  return "מצב קריאה בלבד. ההרשאה שלך בדף הזה מאפשרת לקרוא בלבד; בקשו מאביב הזמנה ככותב/ת.";
+  return `כדי לכתוב פירוש צריך להיכנס · <button class="lnk login">כניסה עם גוגל</button>`;
 }
 function renderEssay(){
   const all=ALL();
@@ -144,7 +137,7 @@ function renderChips(){
 function renderStatus(){
   const st=$("status");
   if(!authReady){ st.hidden=true; return; }
-  if(!me.id){ st.hidden=false; st.className="status ro"; st.innerHTML=`כדי לכתוב פירושים ולסמן 👍 צריך להיכנס · <button class="lnk" id="login">כניסה עם גוגל</button>`; return; }
+  if(!me.id){ st.hidden=false; st.className="status ro"; st.innerHTML=`כדי לכתוב פירושים ולסמן 👍 צריך להיכנס · <button class="lnk login">כניסה עם גוגל</button>`; return; }
   st.hidden=false; st.className="status ok";
   if(editingPen){ st.innerHTML=`<form id="pen-form" class="penf" novalidate><label for="pen-in">שם המפרש שלך</label><input id="pen-in" maxlength="30" value="${esc(myPen())}" placeholder="למשל: בעל הלבנים"><button type="submit" class="pub sm">שמירה</button><button type="button" class="lnk" id="pen-cancel">ביטול</button><span class="mini" id="pen-msg" aria-live="polite"></span><span class="mini penhint">השינוי יחול גם על כל הפירושים שכבר כתבת.</span></form>`; }
   else { const p=myPen(); st.innerHTML= p?`כותב/ת בשם <b>${esc(p)}</b> · <button class="lnk" id="pen-edit">שינוי שם</button>`:`מחובר/ת. לפני הפירוש הראשון כדאי לבחור שם מפרש · <button class="lnk" id="pen-edit">בחירת שם</button>`;
@@ -195,66 +188,87 @@ async function loadPens(){
   if(error) return;
   pens={}; for(const r of data){ if(r.pen_name) pens[r.user_id]=r.pen_name; if(r.user_id===me.id) me.isOwner=!!r.is_admin; }
 }
-/* ---------- writes (one at a time per document) ---------- */
+/* ---------- comments and likes (Supabase) ---------- */
+/* Supabase returns at most 1000 rows per request, so read in pages */
+async function selectAll(table,cols){
+  const out=[];
+  for(let from=0;;from+=1000){
+    const {data,error}=await sb.from(table).select(cols).range(from,from+999);
+    if(error) throw error;
+    out.push(...data); if(data.length<1000) return out;
+  }
+}
+const COMMENT_COLS="id,user_id,issue_id,seg_ids,whole,title,body,link,hidden,created_at";
+function putComment(r){ if(r.hidden&&!me.isOwner) delete comms[r.id]; else comms[r.id]=rowToComment(r); }
+function setLike(uid,target,on){ const m=likeDocs[uid]||(likeDocs[uid]={}); if(on) m[target]=true; else delete m[target]; }
+async function loadAll(){
+  try{
+    const [cs,ls]=await Promise.all([selectAll("comments",COMMENT_COLS),selectAll("likes","user_id,target_id")]);
+    comms={}; cs.forEach(putComment);
+    likeDocs={}; ls.forEach(r=>setLike(r.user_id,r.target_id,true));
+  }catch(e){ return; }
+  liveRender();
+}
+sb.channel("live")
+  .on("postgres_changes",{event:"*",schema:"public",table:"comments"},p=>{
+    if(p.eventType==="DELETE"){ delete comms[p.old.id]; openIds.delete(p.old.id); } else putComment(p.new);
+    liveRender(); })
+  .on("postgres_changes",{event:"*",schema:"public",table:"likes"},p=>{
+    if(p.eventType==="DELETE") setLike(p.old.user_id,p.old.target_id,false); else setLike(p.new.user_id,p.new.target_id,true);
+    liveRender(); })
+  .on("postgres_changes",{event:"*",schema:"public",table:"profiles"},p=>{
+    const r=p.new; if(!r||!r.user_id) return;
+    if(r.pen_name) pens[r.user_id]=r.pen_name; else delete pens[r.user_id];
+    liveRender(); })
+  .subscribe();
+
+/* ---------- writes (one at a time per key) ---------- */
 const chains={};
 function serial(key,fn){ const p=(chains[key]||Promise.resolve()).then(fn,fn); chains[key]=p.catch(()=>{}); return p; }
+/* 42501: blocked by Row Level Security */
 function handleWriteError(err,msgEl){
-  const code=err&&err.code;
-  if(code==="invalid_argument"||code==="not_granted"||code==="revoked"){ writable=false; readOnlyReason="denied"; render(); return; }
-  if(msgEl) msgEl.textContent = code==="quota_exceeded"?"המאגר מלא. כדאי למחוק פירושים ישנים.":"השמירה לא הצליחה. נסו שוב בעוד רגע.";
+  if(msgEl) msgEl.textContent = err&&err.code==="42501"?"אין הרשאה לפעולה הזו. נסו לצאת ולהיכנס שוב.":"השמירה לא הצליחה. נסו שוב בעוד רגע.";
 }
-function newId(){ return Date.now().toString(36)+"-"+Math.random().toString(36).slice(2,7); }
 async function addComment(){
   const form=$("add-form"); if(!form) return;
   const msg=$("add-msg"), btn=$("add-btn");
   const text=$("add-text").value.trim(), dh=$("add-dh").value.trim(), seg=$("add-seg").value;
   const rawLink=$("add-link").value.trim(), link=rawLink?safeUrl(rawLink):"";
-  const fileIn=$("add-file"), file=fileIn&&fileIn.files&&fileIn.files[0];
   if(rawLink&&!link){ msg.textContent="הקישור צריך להתחיל ב-https://"; $("add-link").focus(); return; }
-  if(!text&&!link&&!file){ msg.textContent="כתבו פירוש, או צרפו קישור או קובץ."; $("add-text").focus(); return; }
+  if(!text&&!link){ msg.textContent="כתבו פירוש, או צרפו קישור."; $("add-text").focus(); return; }
   const penIn=$("add-pen");
   if(penIn){ const n=penIn.value.trim(); const pr=penProblem(n); if(pr){ msg.textContent=pr; penIn.focus(); return; }
-    try{ await savePen(n); }catch(err){ handleWriteError(err,msg); return; } }
-  if(file&&file.size>20*1024*1024){ msg.textContent="הקובץ גדול מ-20MB."; return; }
-  if(file&&!/^(image\/(png|jpeg|gif|webp)|application\/pdf)$/.test(file.type)){ msg.textContent="אפשר לצרף תמונה (PNG, JPG, GIF, WEBP) או PDF."; return; }
+    try{ await savePen(n); }catch(err){ msg.textContent=penSaveError(err); return; } }
   const pi=state.para; const sid=seg||ESSAY[pi].segs[0][0];
-  btn.disabled=true; msg.textContent=file?"מעלה את הקובץ…":"שומר…";
-  let att=null;
-  if(file){
-    try{ const r=await assets.upload(file); att={id:r.id,type:r.contentType,name:file.name.slice(0,120)}; }
-    catch(err){ btn.disabled=false; const c=err&&err.code; msg.textContent= c==="too_large"?"הקובץ גדול מדי.":c==="unsupported_type"?"סוג הקובץ לא נתמך.":c==="quota_or_state"?"נגמר המקום לקבצים בדף.":"העלאת הקובץ נכשלה. נסו שוב."; return; }
-    msg.textContent="שומר…";
-  }
+  btn.disabled=true; msg.textContent="שומר…";
   try{
-    await serial("c:"+me.id, async()=>{
-      const mine=Object.assign({}, commDocs[me.id]||{});
-      const cid=newId();
-      mine[cid]={issue:state.issue,p:pi,s:[sid],whole:!seg,dh,text,link,att,at:new Date().toISOString()};
-      await db.doc("comments/"+me.id).set({items:mine});
-      commDocs[me.id]=mine; openIds.add("c:"+me.id+":"+cid);
-    });
+    const {data,error}=await sb.from("comments")
+      .insert({issue_id:state.issue,seg_ids:[sid],whole:!seg,title:dh||null,body:text||null,link:link||null})
+      .select(COMMENT_COLS).single();
+    if(error) throw error;
+    putComment(data); openIds.add(data.id);
     state.draft={seg:"",dh:"",text:"",link:"",pen:""}; document.activeElement&&document.activeElement.blur&&document.activeElement.blur(); pending=false; render();
     const m=$("add-msg"); if(m) m.textContent="הפירוש פורסם.";
   }catch(err){ btn.disabled=false; handleWriteError(err,msg); }
 }
 async function deleteComment(id){
-  const [,uid,cid]=id.split(":");
   try{
-    await serial("c:"+uid, async()=>{
-      const items=Object.assign({}, commDocs[uid]||{}); const old=items[cid]; delete items[cid];
-      if(old&&old.att&&old.att.id&&assets){ try{ await assets.delete(old.att.id); }catch(e){} }
-      await db.doc("comments/"+uid).set({items}); commDocs[uid]=items;
-    });
-    openIds.delete(id); render();
+    const {error}=await sb.from("comments").delete().eq("id",id);
+    if(error) throw error;
+    delete comms[id]; openIds.delete(id); render();
   }catch(err){ handleWriteError(err,null); }
 }
 async function toggleLike(id,btn){
   if(!writable) return;
   try{
-    await serial("l:"+me.id, async()=>{
-      const mine=Object.assign({}, likeDocs[me.id]||{});
-      if(mine[id]) delete mine[id]; else mine[id]=true;
-      await db.doc("likes/"+me.id).set({items:mine}); likeDocs[me.id]=mine;
+    await serial("l:"+id, async()=>{
+      if(iLiked(id)){
+        const {error}=await sb.from("likes").delete().eq("user_id",me.id).eq("target_id",id);
+        if(error) throw error; setLike(me.id,id,false);
+      }else{
+        const {error}=await sb.from("likes").insert({target_id:id});
+        if(error&&error.code!=="23505") throw error; setLike(me.id,id,true); /* 23505: already liked */
+      }
     });
     const c=ALL().find(x=>x.id===id); if(btn&&c){ btn.setAttribute("aria-pressed",iLiked(id)); btn.textContent="👍 "+likes(c); }
   }catch(err){ handleWriteError(err,null); }
@@ -277,7 +291,7 @@ document.addEventListener("click",e=>{
   if(e.target.closest(".close")){state.para=null;render();return;}
   if(e.target.id==="pen-edit"){ editingPen=true; renderStatus(); $("pen-in")&&$("pen-in").focus(); return; }
   if(e.target.id==="pen-cancel"){ editingPen=false; renderStatus(); return; }
-  if(e.target.id==="login"){ signIn(); return; }
+  if(e.target.closest(".login")){ signIn(); return; }
   if(e.target.id==="logout"){ sb.auth.signOut(); return; }
   if(e.target.closest("#add-form")||e.target.closest("#pen-form")) return;
   const pa=e.target.closest(".para"); if(pa){openPara(+pa.dataset.p);return;}
@@ -381,7 +395,9 @@ async function signIn(){
 }
 async function applySession(session){
   const id=session&&session.user?session.user.id:null;
-  if(id!==me.id){ me={id,isOwner:false}; editingPen=false; await loadPens(); }
+  /* the first call always loads; admins also see hidden comments, so reload when the user changes */
+  if(!authReady||id!==me.id){ me={id,isOwner:false}; editingPen=false; await loadPens(); await loadAll(); }
+  writable=!!id; readOnlyReason=id?"":"signin";
   authReady=true; liveRender();
 }
 sb.auth.onAuthStateChange((_event,session)=>{ setTimeout(()=>applySession(session),0); });
